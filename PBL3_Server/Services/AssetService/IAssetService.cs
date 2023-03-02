@@ -1,6 +1,6 @@
 ﻿namespace PBL3_Server.Services.RoomService
 {
-    public interface IRoomService
+    public interface IAssetService
     {
         Task<List<Asset>> GetAllAssets();
         Task<Asset?> GetSingleAsset(int id);

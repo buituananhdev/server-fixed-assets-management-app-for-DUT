@@ -9,7 +9,7 @@ using System.Text;
 
 namespace PBL3_Server.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/auth")]
     [ApiController]
     public class AuthController : ControllerBase
     {
@@ -55,7 +55,7 @@ namespace PBL3_Server.Controllers
         [HttpGet("user")]
         public async Task<IActionResult> GetUser()
         {
-            return Ok("Login");
+            return Ok("");
         }
     }
 }

@@ -8,30 +8,30 @@ using System.Data;
 
 namespace PBL3_Server.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/asset")]
     [ApiController]
     public class AssetController : ControllerBase
     {
 
-        private readonly IRoomService _RoomService;
+        private readonly IAssetService _AssetService;
 
-        public AssetController(IRoomService RoomService)
+        public AssetController(IAssetService AssetService)
         {
-            _RoomService = RoomService;
+            _AssetService = AssetService;
         }
 
-        [Authorize]
+        [Authorize(Roles = "admin")]
         [HttpGet]
         public async Task<ActionResult<List<Asset>>> GetAllAssets()
         {
-            return await _RoomService.GetAllAssets();
+            return await _AssetService.GetAllAssets();
         }
 
         [Authorize(Roles = "admin")]
         [HttpGet("{id}")]
         public async Task<ActionResult<Asset>> GetSingleAsset(int id)
         {
-            var result = await _RoomService.GetSingleAsset(id);
+            var result = await _AssetService.GetSingleAsset(id);
             if (result is null)
                 return NotFound("Asset not found!");
 
@@ -42,7 +42,7 @@ namespace PBL3_Server.Controllers
         [HttpPost]
         public async Task<ActionResult<List<Asset>>> AddAsset(Asset asset)
         {
-            var result = await _RoomService.AddAsset(asset);
+            var result = await _AssetService.AddAsset(asset);
             return Ok(result);
         }
 
@@ -50,7 +50,7 @@ namespace PBL3_Server.Controllers
         [HttpPut("{id}")]
         public async Task<ActionResult<List<Asset>>> UpdateAsset(int id, Asset request)
         {
-            var result = await _RoomService.UpdateAsset(id, request);
+            var result = await _AssetService.UpdateAsset(id, request);
             if (result is null)
                 return NotFound("Asset not found!");
 
@@ -61,7 +61,7 @@ namespace PBL3_Server.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult<List<Asset>>> DeleteAsset(int id)
         {
-            var result = await _RoomService.DeleteAsset(id);
+            var result = await _AssetService.DeleteAsset(id);
             if (result is null)
                 return NotFound("Asset not found!");
 

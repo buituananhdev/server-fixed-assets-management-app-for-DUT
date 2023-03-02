@@ -1,9 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿global using Microsoft.EntityFrameworkCore;
 
 namespace PBL3_Server.Data
 {
     public class DataContext : DbContext
     {
+        
+
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
 
@@ -15,5 +17,7 @@ namespace PBL3_Server.Data
         }
 
         public DbSet<Asset> Assets { get; set; }
+
+        public DbSet<DisposedAsset> DisposedAssets { get; set; }
     }
 }

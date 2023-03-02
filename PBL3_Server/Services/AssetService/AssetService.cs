@@ -1,15 +1,16 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using PBL3_Server.Services.RoomService;
 
-namespace PBL3_Server.Services.RoomService
+namespace PBL3_Server.Services.AssetService
 {
-    public class RoomService : IRoomService
+    public class AssetService : IAssetService
     {
         private static List<Asset> Assets = new List<Asset>();
             
 
         private readonly DataContext _context;
 
-        public RoomService(DataContext context) 
+        public AssetService(DataContext context) 
         {
             this._context = context;
         }

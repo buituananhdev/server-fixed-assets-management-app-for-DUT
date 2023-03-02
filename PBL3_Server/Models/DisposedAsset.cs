@@ -1,7 +1,10 @@
-﻿namespace PBL3_Server.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace PBL3_Server.Models
 {
     public class DisposedAsset
     {
+        [Key]
         public int AssetID { get; set; }
         public string DeviceID { get; set; } = string.Empty;
         public string RoomID { get; set; } = string.Empty;
