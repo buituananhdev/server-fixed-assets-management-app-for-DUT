@@ -13,7 +13,7 @@ namespace PBL3_Server.Models
         public string TechnicalSpecification { get; set; } = string.Empty;
         public int Quantity { get; set; }
         public double Cost { get; set; }
-        public DateTime DateDisposed { get; set; }
+        public DateTime DateDisposed { get; set; } = DateTime.UtcNow;
         public string Notes { get; set; } = string.Empty;
     }
 }

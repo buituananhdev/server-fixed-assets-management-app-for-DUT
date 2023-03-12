@@ -1,4 +1,5 @@
 ﻿global using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Linq;
 
 namespace PBL3_Server.Data
 {
@@ -18,6 +19,10 @@ namespace PBL3_Server.Data
 
         public DbSet<Asset> Assets { get; set; }
 
+        public DbSet<User> Users { get; set; }
+
         public DbSet<DisposedAsset> DisposedAssets { get; set; }
+
+        public DbSet<TokenEntity> Tokens { get; set; }
     }
 }

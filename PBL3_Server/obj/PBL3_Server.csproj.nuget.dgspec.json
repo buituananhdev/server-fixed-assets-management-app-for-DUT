@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\WorkSpace\\PBL3\\PBL3_Server\\PBL3_Server\\PBL3_Server.csproj": {}
+    "D:\\WorkSpace\\PBL3\\PBL3_Server\\PBL3_fixed_assets_management_app_for_DUT\\PBL3_Server\\PBL3_Server.csproj": {}
   },
   "projects": {
-    "D:\\WorkSpace\\PBL3\\PBL3_Server\\PBL3_Server\\PBL3_Server.csproj": {
+    "D:\\WorkSpace\\PBL3\\PBL3_Server\\PBL3_fixed_assets_management_app_for_DUT\\PBL3_Server\\PBL3_Server.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\WorkSpace\\PBL3\\PBL3_Server\\PBL3_Server\\PBL3_Server.csproj",
+        "projectUniqueName": "D:\\WorkSpace\\PBL3\\PBL3_Server\\PBL3_fixed_assets_management_app_for_DUT\\PBL3_Server\\PBL3_Server.csproj",
         "projectName": "PBL3_Server",
-        "projectPath": "D:\\WorkSpace\\PBL3\\PBL3_Server\\PBL3_Server\\PBL3_Server.csproj",
+        "projectPath": "D:\\WorkSpace\\PBL3\\PBL3_Server\\PBL3_fixed_assets_management_app_for_DUT\\PBL3_Server\\PBL3_Server.csproj",
         "packagesPath": "C:\\Users\\Vivobook\\.nuget\\packages\\",
-        "outputPath": "D:\\WorkSpace\\PBL3\\PBL3_Server\\PBL3_Server\\obj\\",
+        "outputPath": "D:\\WorkSpace\\PBL3\\PBL3_Server\\PBL3_fixed_assets_management_app_for_DUT\\PBL3_Server\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -77,6 +77,10 @@
             "Swashbuckle.AspNetCore": {
               "target": "Package",
               "version": "[6.4.0, )"
+            },
+            "X.PagedList.Mvc.Core": {
+              "target": "Package",
+              "version": "[8.4.5, )"
             }
           },
           "imports": [

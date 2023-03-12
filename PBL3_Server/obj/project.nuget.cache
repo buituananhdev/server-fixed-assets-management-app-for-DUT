@@ -1,13 +1,14 @@
 {
   "version": 2,
-  "dgSpecHash": "n22WVHGOHnocDiC0s/9oxF0t+zopgs3tuL3UJTqt5wbS5oBv85c326nFEe7UIfDAyPfg1VaFaQbxXM0y8Jjm1w==",
+  "dgSpecHash": "XwlkTE5gVzhHyRolXyNex1fEELl1mt12SSsuhopFLA3Bi4JIV1iDJHfQj+Jb9eA0hb9VldTBbw0NecSF6IJBBw==",
   "success": true,
-  "projectFilePath": "D:\\WorkSpace\\PBL3\\PBL3_Server\\PBL3_Server\\PBL3_Server.csproj",
+  "projectFilePath": "D:\\WorkSpace\\PBL3\\PBL3_Server\\PBL3_fixed_assets_management_app_for_DUT\\PBL3_Server\\PBL3_Server.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Vivobook\\.nuget\\packages\\azure.core\\1.24.0\\azure.core.1.24.0.nupkg.sha512",
     "C:\\Users\\Vivobook\\.nuget\\packages\\azure.identity\\1.6.0\\azure.identity.1.6.0.nupkg.sha512",
     "C:\\Users\\Vivobook\\.nuget\\packages\\bcrypt.net-next\\4.0.3\\bcrypt.net-next.4.0.3.nupkg.sha512",
     "C:\\Users\\Vivobook\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
+    "C:\\Users\\Vivobook\\.nuget\\packages\\jetbrains.annotations\\2022.3.1\\jetbrains.annotations.2022.3.1.nupkg.sha512",
     "C:\\Users\\Vivobook\\.nuget\\packages\\microsoft.aspnetcore.authentication.jwtbearer\\7.0.3\\microsoft.aspnetcore.authentication.jwtbearer.7.0.3.nupkg.sha512",
     "C:\\Users\\Vivobook\\.nuget\\packages\\microsoft.aspnetcore.jsonpatch\\7.0.3\\microsoft.aspnetcore.jsonpatch.7.0.3.nupkg.sha512",
     "C:\\Users\\Vivobook\\.nuget\\packages\\microsoft.aspnetcore.mvc.newtonsoftjson\\7.0.3\\microsoft.aspnetcore.mvc.newtonsoftjson.7.0.3.nupkg.sha512",
@@ -82,7 +83,9 @@
     "C:\\Users\\Vivobook\\.nuget\\packages\\system.text.json\\7.0.0\\system.text.json.7.0.0.nupkg.sha512",
     "C:\\Users\\Vivobook\\.nuget\\packages\\system.threading.tasks\\4.3.0\\system.threading.tasks.4.3.0.nupkg.sha512",
     "C:\\Users\\Vivobook\\.nuget\\packages\\system.threading.tasks.extensions\\4.5.4\\system.threading.tasks.extensions.4.5.4.nupkg.sha512",
-    "C:\\Users\\Vivobook\\.nuget\\packages\\system.windows.extensions\\5.0.0\\system.windows.extensions.5.0.0.nupkg.sha512"
+    "C:\\Users\\Vivobook\\.nuget\\packages\\system.windows.extensions\\5.0.0\\system.windows.extensions.5.0.0.nupkg.sha512",
+    "C:\\Users\\Vivobook\\.nuget\\packages\\x.pagedlist\\8.4.5\\x.pagedlist.8.4.5.nupkg.sha512",
+    "C:\\Users\\Vivobook\\.nuget\\packages\\x.pagedlist.mvc.core\\8.4.5\\x.pagedlist.mvc.core.8.4.5.nupkg.sha512"
   ],
   "logs": []
 }

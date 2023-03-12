@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using PBL3_Server.Models;
 using PBL3_Server.Services.RoomService;
 using System.Data;
+using X.PagedList;
 
 namespace PBL3_Server.Controllers
 {
@@ -22,98 +23,87 @@ namespace PBL3_Server.Controllers
 
         [Authorize(Roles = "admin")]
         [HttpGet]
-        public async Task<ActionResult<List<Asset>>> GetAllAssets()
+        public async Task<ActionResult<List<Asset>>> GetAllAssets(int pageNumber = 1, int pageSize = 10, string status = "")
         {
-            return await _AssetService.GetAllAssets();
+            if (!User.Identity.IsAuthenticated)
+            {
+                return Ok(new { message = "You don't have permission to access this page" });
+            }
+
+            var assets = await _AssetService.GetAllAssets();
+            var pagedAssets = assets.ToPagedList(pageNumber, pageSize);
+            if (!string.IsNullOrEmpty(status))
+            {
+                assets = assets.Where(a => a.Status.ToLower() == status.ToLower()).ToList();
+            }
+
+            var paginationInfo = new PaginationInfo
+            {
+                TotalPages = pagedAssets.PageCount,
+                CurrentPage = pagedAssets.PageNumber,
+                HasPreviousPage = pagedAssets.HasPreviousPage,
+                HasNextPage = pagedAssets.HasNextPage,
+                PageSize = pagedAssets.PageSize
+            };
+            return Ok(new { status = "success", data = pagedAssets, meta = paginationInfo });
         }
 
         [Authorize(Roles = "admin")]
         [HttpGet("{id}")]
         public async Task<ActionResult<Asset>> GetSingleAsset(int id)
         {
+            if (!User.Identity.IsAuthenticated)
+            {
+                return Unauthorized("Bạn không có quyền truy cập.");
+            }
             var result = await _AssetService.GetSingleAsset(id);
             if (result is null)
                 return NotFound("Asset not found!");
-
-            return Ok(result);
+            return Ok(new { status = "success", data = result});
         }
 
         [Authorize]
         [HttpPost]
         public async Task<ActionResult<List<Asset>>> AddAsset(Asset asset)
         {
+            if (!User.Identity.IsAuthenticated)
+            {
+                return Unauthorized("Bạn không có quyền truy cập.");
+            }
             var result = await _AssetService.AddAsset(asset);
-            return Ok(result);
+            return Ok(new { status = "success", data = result });
         }
 
         [Authorize(Roles = "admin")]
         [HttpPut("{id}")]
         public async Task<ActionResult<List<Asset>>> UpdateAsset(int id, Asset request)
         {
+            if (!User.Identity.IsAuthenticated)
+            {
+                return Unauthorized("Bạn không có quyền truy cập.");
+            }
             var result = await _AssetService.UpdateAsset(id, request);
             if (result is null)
                 return NotFound("Asset not found!");
 
-            return Ok(result);
+            return Ok(new { status = "success", data = result });
         }
 
         [Authorize(Roles = "admin")]
         [HttpDelete("{id}")]
         public async Task<ActionResult<List<Asset>>> DeleteAsset(int id)
         {
+            if (!User.Identity.IsAuthenticated)
+            {
+                return Unauthorized("Bạn không có quyền truy cập.");
+            }
             var result = await _AssetService.DeleteAsset(id);
             if (result is null)
                 return NotFound("Asset not found!");
 
-            return Ok(result);
+            return Ok(new { status = "success", data = result });
         }
 
-        /*
-         [HttpPost]
-        [Route("dispose-asset")]
-        public IActionResult DisposeAsset(int assetID)
-        {
-            using (var transaction = _context.Database.BeginTransaction())
-            {
-                try
-                {
-                    var dateDisposed = DateTime.Now;
-
-                    var asset = _context.Assets.FirstOrDefault(a => a.AssetID == assetID);
-
-                    if (asset == null)
-                    {
-                        return BadRequest("Asset not found");
-                    }
-
-                    var disposedAsset = new DisposedAsset
-                    {
-                        AssetID = asset.AssetID,
-                        RoomID = asset.RoomID,
-                        AssetName = asset.AssetName,
-                        YearOfUse = asset.YearOfUse,
-                        TechnicalSpecification = asset.TechnicalSpecification,
-                        Quantity = asset.Quantity,
-                        Cost = asset.Cost,
-                        DateDisposed = dateDisposed,
-                        Notes = asset.Notes
-                    };
-
-                    _context.DisposedAssets.Add(disposedAsset);
-                    _context.Assets.Remove(asset);
-                    _context.SaveChanges();
-
-                    transaction.Commit();
-
-                    return Ok();
-                }
-                catch (Exception ex)
-                {
-                    transaction.Rollback();
-                    return StatusCode(500, ex.Message);
-                }
-            }
-        }
-         */
+        
     }
 }

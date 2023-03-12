@@ -5,22 +5,7 @@ namespace PBL3_Server.Services.DisposedAssetService
 {
     public class DisposedAssetService : IDisposedAssetService
     {
-        private static List<DisposedAsset> DisposedAssets = new List<DisposedAsset>
-        {
-            new DisposedAsset
-            {
-                AssetID = 0,
-                DeviceID = "aa",
-                RoomID = "f101",
-                AssetName = "Name",
-                YearOfUse = 2003,
-                TechnicalSpecification = "ggg",
-                Quantity = 0,
-                Cost= 0,
-                DateDisposed = DateTime.Now,
-                Notes = "ssdfsdf"
-            }
-        };
+        private static List<DisposedAsset> DisposedAssets = new List<DisposedAsset>();
 
 
         private readonly DataContext _context;
@@ -82,5 +67,6 @@ namespace PBL3_Server.Services.DisposedAssetService
 
             return DisposedAssets;
         }
+
     }
 }

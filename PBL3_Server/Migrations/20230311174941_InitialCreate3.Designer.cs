@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PBL3_Server.Data;
 
@@ -11,9 +12,11 @@ using PBL3_Server.Data;
 namespace PBL3Server.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230311174941_InitialCreate3")]
+    partial class InitialCreate3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -113,7 +116,7 @@ namespace PBL3Server.Migrations
                     b.ToTable("DisposedAssets");
                 });
 
-            modelBuilder.Entity("PBL3_Server.Models.TokenEntity", b =>
+            modelBuilder.Entity("PBL3_Server.Models.Token", b =>
                 {
                     b.Property<int>("TokenID")
                         .ValueGeneratedOnAdd()
@@ -132,9 +135,8 @@ namespace PBL3Server.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Username")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("UserID")
+                        .HasColumnType("int");
 
                     b.HasKey("TokenID");
 
