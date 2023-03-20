@@ -5,6 +5,7 @@ using PBL3_Server.Models;
 using PBL3_Server.Services.DisposedAssetService;
 using PBL3_Server.Services.RoomService;
 using System.Data;
+using X.PagedList;
 
 namespace PBL3_Server.Controllers
 {
@@ -19,52 +20,88 @@ namespace PBL3_Server.Controllers
             _DisposedAssetService = DisposedAssetService;
         }
 
-        [Authorize(Roles = "admin")]
+        [Authorize]
         [HttpGet]
-        public async Task<ActionResult<List<DisposedAsset>>> GetAllDisposedAssets()
+        public async Task<ActionResult<List<DisposedAsset>>> GetAllDisposedAssets(int pageNumber = 1, int pageSize = 10, DateTime? dateDisposed = null)
         {
-            return await _DisposedAssetService.GetAllDisposedAssets();
+            if (!User.Identity.IsAuthenticated)
+            {
+                return Unauthorized(new { message = "You don't have permission to access this page" });
+            }
+            var assets = await _DisposedAssetService.GetAllDisposedAssets();
+            var pagedAssets = assets.ToPagedList(pageNumber, pageSize);
+            if (dateDisposed.HasValue)
+            {
+                assets = assets.Where(a => a.DateDisposed == dateDisposed.Value).ToList();
+            }
+
+            //Tạo đối tượng paginationInfo để lưu thông tin phân trang
+            var paginationInfo = new PaginationInfo
+            {
+                TotalPages = pagedAssets.PageCount,
+                CurrentPage = pagedAssets.PageNumber,
+                HasPreviousPage = pagedAssets.HasPreviousPage,
+                HasNextPage = pagedAssets.HasNextPage,
+                PageSize = pagedAssets.PageSize
+            };
+            return Ok(new { status = "success", data = pagedAssets, meta = paginationInfo });
         }
 
-        [Authorize(Roles = "admin")]
+        [Authorize]
         [HttpGet("{id}")]
         public async Task<ActionResult<DisposedAsset>> GetSingleDisposedAsset(int id)
         {
+            if (!User.Identity.IsAuthenticated)
+            {
+                return Unauthorized(new { message = "You don't have permission to access this page" });
+            }
             var result = await _DisposedAssetService.GetSingleDisposedAsset(id);
             if (result is null)
                 return NotFound("Asset not found!");
 
-            return Ok(result);
+            return Ok(new { status = "success", data = result });
         }
 
         [Authorize]
         [HttpPost]
         public async Task<ActionResult<List<DisposedAsset>>> AddDisposedAsset(DisposedAsset asset)
         {
+            if (!User.Identity.IsAuthenticated)
+            {
+                return Unauthorized(new { message = "You don't have permission to access this page" });
+            }
             var result = await _DisposedAssetService.AddDisposedAsset(asset);
-            return Ok(result);
+            return Ok(new { status = "success", data = result });
         }
 
-        [Authorize(Roles = "admin")]
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<ActionResult<List<DisposedAsset>>> UpdateDisposedAsset(int id, DisposedAsset request)
         {
+            if (!User.Identity.IsAuthenticated)
+            {
+                return Unauthorized(new { message = "You don't have permission to access this page" });
+            }
             var result = await _DisposedAssetService.UpdateDisposedAsset(id, request);
             if (result is null)
                 return NotFound("Asset not found!");
 
-            return Ok(result);
+            return Ok(new { status = "success", data = result });
         }
 
-        [Authorize(Roles = "admin")]
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<ActionResult<List<DisposedAsset>>> DeleteDisposedAsset(int id)
         {
+            if (!User.Identity.IsAuthenticated)
+            {
+                return Unauthorized(new { message = "You don't have permission to access this page" });
+            }
             var result = await _DisposedAssetService.DeleteDisposedAsset(id);
             if (result is null)
                 return NotFound("Asset not found!");
 
-            return Ok(result);
+            return Ok(new { status = "success", data = result });
         }
     }
 }

@@ -12,7 +12,7 @@ namespace PBL3_Server.Services.AssetService
 
         public AssetService(DataContext context) 
         {
-            this._context = context;
+            _context = context;
         }
 
         public async Task<List<Asset>> AddAsset(Asset asset)
@@ -65,6 +65,30 @@ namespace PBL3_Server.Services.AssetService
 
             await _context.SaveChangesAsync();
 
+            return Assets;
+        }
+        public async Task<List<Asset>> DisposedAsset(int id)
+        {
+            var asset = await _context.Assets.FindAsync(id);
+            if (asset is null)
+                return null;
+            var disposedAsset = new DisposedAsset
+            {
+                AssetID = asset.AssetID,
+                DeviceID = asset.DeviceID,
+                RoomID = asset.RoomID,
+                AssetName = asset.AssetName,
+                YearOfUse = asset.YearOfUse,
+                TechnicalSpecification = asset.TechnicalSpecification,
+                Quantity = asset.Quantity,
+                Cost = asset.Cost,
+                DateDisposed = DateTime.Now,
+                Notes = asset.Notes
+            };
+            
+            _context.Remove(asset);
+            _context.Add(disposedAsset);
+            await _context.SaveChangesAsync();
             return Assets;
         }
     }

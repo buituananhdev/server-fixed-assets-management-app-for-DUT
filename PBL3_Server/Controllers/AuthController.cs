@@ -8,6 +8,7 @@ using PBL3_Server.Models;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using BCrypt.Net;
 
 namespace PBL3_Server.Controllers
 {
@@ -23,18 +24,14 @@ namespace PBL3_Server.Controllers
             _configuration = configuration;
         }
         public static User user = new User();
-        private readonly List<User> _users = new List<User>
-        {
-            new User { Username = "admin", Password = "123456" }
-        };
+        
 
         [HttpPost("login")]
         public IActionResult Login(User request)
         {
-
             // Kiểm tra thông tin đăng nhập của người dùng từ database
-            var user = _dbContext.Users.SingleOrDefault(u => u.Username == request.Username && u.Password == request.Password);
-            if (user == null)
+            var user = _dbContext.Users.SingleOrDefault(u => u.Username == request.Username);
+            if (user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.Password))
             {
                 return BadRequest("Tên đăng nhập hoặc mật khẩu không đúng");
             }
@@ -65,15 +62,15 @@ namespace PBL3_Server.Controllers
                 Username = user.Username,
                 JwtToken = tokenHandler.WriteToken(jwtToken),
                 RefreshToken = refreshToken,
-                ExpirationTime = DateTime.UtcNow.AddDays(1)
+                ExpirationTime = DateTime.UtcNow.AddDays(1),
+                AccessTime = DateTime.Now
             };
             _dbContext.Tokens.Add(tokenEntity);
             _dbContext.SaveChanges();
 
             // Trả về token và refresh token cho client
 
-            var authResponse = new AuthResponse { Token = tokenHandler.WriteToken(jwtToken), RefreshToken = refreshToken, ExpirationTime = DateTime.UtcNow.AddDays(1), Role = "admin" };
-            return Ok(authResponse);
+            return Ok(new { Token = tokenHandler.WriteToken(jwtToken), RefreshToken = refreshToken, ExpirationTime = DateTime.UtcNow.AddDays(1), AccessTime = DateTime.Now, Username = user.Username, Role = user.UserRole });
         }
 
         [HttpPost("logout")]
