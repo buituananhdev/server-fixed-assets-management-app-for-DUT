@@ -5,7 +5,6 @@ namespace PBL3_Server.Data
 {
     public class DataContext : DbContext
     {
-        
 
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
@@ -24,5 +23,9 @@ namespace PBL3_Server.Data
         public DbSet<DisposedAsset> DisposedAssets { get; set; }
 
         public DbSet<TokenEntity> Tokens { get; set; }
+
+        public DbSet<Organization> Organizations { get; set; }
+
+        public DbSet<Room> Rooms { get; set; }
     }
 }

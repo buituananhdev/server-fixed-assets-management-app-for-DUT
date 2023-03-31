@@ -8,6 +8,7 @@ using PBL3_Server.Services.AssetService;
 using PBL3_Server.Services.DisposedAssetService;
 using PBL3_Server.Services.UserService;
 using PBL3_Server.Services.AuthService;
+using PBL3_Server.Services.OrganizationService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +23,8 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IAssetService, AssetService>();
 builder.Services.AddScoped<IDisposedAssetService, DisposedAssetService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IOrganizationService, OrganizationService>();
+builder.Services.AddScoped<IRoomService, RoomService>();
 builder.Services.AddDbContext<DataContext>();
 
 

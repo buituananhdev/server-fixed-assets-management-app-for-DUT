@@ -24,7 +24,7 @@ namespace PBL3_Server.Controllers
         [Authorize]
         [HttpGet]
         // Hàm trả về danh sách tài sản 
-        public async Task<ActionResult<List<Asset>>> GetAllAssets(int pageNumber = 1, int pageSize = 10, string status = "")
+        public async Task<ActionResult<List<Asset>>> GetAllAssets(int pageNumber = 1, int pageSize = 10, string status = "", string room_id = "")
         {
             if (!User.Identity.IsAuthenticated)
             {
@@ -35,6 +35,11 @@ namespace PBL3_Server.Controllers
             if (!string.IsNullOrEmpty(status))
             {
                 assets = assets.Where(a => a.Status.ToLower() == status.ToLower()).ToList();
+            }
+
+            if (!string.IsNullOrEmpty(room_id))
+            {
+                assets = assets.Where(a => a.RoomID.ToLower() == room_id.ToLower()).ToList();
             }
             var pagedAssets = assets.ToPagedList(pageNumber, pageSize);
 
@@ -61,7 +66,7 @@ namespace PBL3_Server.Controllers
             }
             var result = await _AssetService.GetSingleAsset(id);
             if (result is null)
-                return NotFound("Asset not found!");
+                return NotFound(new { status = "failure", message = "Asset not found!" });
             return Ok(new { status = "success", data = result});
         }
 
@@ -89,7 +94,7 @@ namespace PBL3_Server.Controllers
             }
             var result = await _AssetService.UpdateAsset(id, request);
             if (result is null)
-                return NotFound("Asset not found!");
+                return NotFound(new { status = "failure", message = "Asset not found!" });
 
             return Ok(new { status = "success", data = result });
         }
@@ -105,7 +110,7 @@ namespace PBL3_Server.Controllers
             }
             var result = await _AssetService.DeleteAsset(id);
             if (result is null)
-                return NotFound("Asset not found!");
+                return NotFound(new { status = "failure", message = "Asset not found!" });
 
             return Ok(new { status = "success", data = result });
         }
@@ -121,7 +126,7 @@ namespace PBL3_Server.Controllers
             }
             var result = await _AssetService.DisposedAsset(id);
             if (result is null)
-                return NotFound("Asset not found!");
+                return NotFound(new { status = "failure", message = "Asset not found!" });
 
             return Ok(new { status = "success", data = result });
         }

@@ -33,7 +33,7 @@ namespace PBL3_Server.Controllers
             var user = _dbContext.Users.SingleOrDefault(u => u.Username == request.Username);
             if (user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.Password))
             {
-                return BadRequest("Tên đăng nhập hoặc mật khẩu không đúng");
+                return BadRequest(new {status = "failure", message = "Incorrect username or password!"});
             }
 
             // Tạo token và refresh token
@@ -70,7 +70,7 @@ namespace PBL3_Server.Controllers
 
             // Trả về token và refresh token cho client
 
-            return Ok(new { Token = tokenHandler.WriteToken(jwtToken), RefreshToken = refreshToken, ExpirationTime = DateTime.UtcNow.AddDays(1), AccessTime = DateTime.Now, Username = user.Username, Role = user.UserRole });
+            return Ok(new { Token = tokenHandler.WriteToken(jwtToken), Refresh_Token = refreshToken, ExpirationTime = DateTime.UtcNow.AddDays(1), AccessTime = DateTime.Now, Username = user.Username, Role = user.UserRole });
         }
 
         [HttpPost("logout")]
@@ -80,7 +80,7 @@ namespace PBL3_Server.Controllers
             var token = HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
             if (string.IsNullOrEmpty(token))
             {
-                return BadRequest("Invalid token");
+                return BadRequest(new {status= "failure", message= "Invalid token"});
             }
 
             // Validate the token and extract the username
@@ -100,7 +100,7 @@ namespace PBL3_Server.Controllers
                 var username = claimsPrincipal.Identity?.Name;
                 if (string.IsNullOrEmpty(username))
                 {
-                    return BadRequest("Invalid username");
+                    return BadRequest(new { status = "failure", message = "Invalid username" });
                 }
 
                 // Remove the token and refresh token from the database
@@ -111,13 +111,62 @@ namespace PBL3_Server.Controllers
                     _dbContext.SaveChanges();
                 }
 
-                return Ok("success");
+                return Ok(new { status = "success", message = "Successfully logged out" });
             }
             catch (Exception)
             {
-                return BadRequest("Invalid token");
+                return BadRequest(new { status = "failure", message = "Invalid token" });
             }
         }
+
+        [HttpPost("refresh")]
+        public IActionResult RefreshToken(string refreshToken)
+        {
+            // Tìm kiếm tokenEntity trong database với refresh token được truyền vào
+            var tokenEntity = _dbContext.Tokens.SingleOrDefault(t => t.RefreshToken == refreshToken);
+
+            // Kiểm tra xem tokenEntity có tồn tại không
+            if (tokenEntity == null)
+            {
+                return BadRequest(new { status = "failure", message = "Invalid refresh token!" });
+            }
+
+            // Kiểm tra xem token đã hết hạn chưa
+            if (tokenEntity.ExpirationTime < DateTime.UtcNow)
+            {
+                return BadRequest(new { status = "failure", message = "Token has expired!" });
+            }
+
+            // Tạo một token mới và refresh token mới
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
+                _configuration.GetSection("AppSettings:Token").Value!));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
+
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new Claim[]
+                {
+                    new Claim(ClaimTypes.Name, user.Username),
+                    new Claim(ClaimTypes.Role, user.UserRole)
+                }),
+                Expires = DateTime.UtcNow.AddDays(1),
+                SigningCredentials = creds
+            };
+            var jwtToken = tokenHandler.CreateToken(tokenDescriptor);
+            var newRefreshToken = Guid.NewGuid().ToString();
+
+            // Cập nhật token mới và refresh token mới trong database
+            tokenEntity.JwtToken = tokenHandler.WriteToken(jwtToken);
+            tokenEntity.RefreshToken = newRefreshToken;
+            tokenEntity.ExpirationTime = DateTime.UtcNow.AddDays(1);
+            tokenEntity.AccessTime = DateTime.Now;
+            _dbContext.SaveChanges();
+
+            // Trả về token mới và refresh token mới cho client
+            return Ok(new { Token = tokenHandler.WriteToken(jwtToken), refresh_token = newRefreshToken, ExpirationTime = DateTime.UtcNow.AddDays(1), AccessTime = DateTime.Now, Username = tokenEntity.Username });
+        }
+
 
         [HttpGet("user")]
         public async Task<IActionResult> GetUser()

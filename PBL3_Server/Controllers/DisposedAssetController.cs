@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PBL3_Server.Models;
+using PBL3_Server.Services.AssetService;
 using PBL3_Server.Services.DisposedAssetService;
 using PBL3_Server.Services.RoomService;
 using System.Data;
@@ -57,7 +58,7 @@ namespace PBL3_Server.Controllers
             }
             var result = await _DisposedAssetService.GetSingleDisposedAsset(id);
             if (result is null)
-                return NotFound("Asset not found!");
+                return NotFound(new { status = "failure", message = "Asset not found!" });
 
             return Ok(new { status = "success", data = result });
         }
@@ -84,7 +85,7 @@ namespace PBL3_Server.Controllers
             }
             var result = await _DisposedAssetService.UpdateDisposedAsset(id, request);
             if (result is null)
-                return NotFound("Asset not found!");
+                return NotFound(new { status = "failure", message = "Asset not found!" });
 
             return Ok(new { status = "success", data = result });
         }
@@ -99,7 +100,23 @@ namespace PBL3_Server.Controllers
             }
             var result = await _DisposedAssetService.DeleteDisposedAsset(id);
             if (result is null)
-                return NotFound("Asset not found!");
+                return NotFound(new { status = "failure", message = "Asset not found!" });
+
+            return Ok(new { status = "success", data = result });
+        }
+
+        [Authorize]
+        [HttpPost("{id}")]
+        // Hàm hủy thanh lý tài sản theo ID
+        public async Task<ActionResult<List<DisposedAsset>>> CancelDisposeAsset(int id)
+        {
+            if (!User.Identity.IsAuthenticated)
+            {
+                return Unauthorized(new { message = "You don't have permission to access this page" });
+            }
+            var result = await _DisposedAssetService.CancelDisposeAsset(id);
+            if (result is null)
+                return NotFound(new { status = "failure", message = "Asset not found!" });
 
             return Ok(new { status = "success", data = result });
         }

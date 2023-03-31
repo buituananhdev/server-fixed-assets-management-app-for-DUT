@@ -55,7 +55,7 @@ namespace PBL3_Server.Controllers
             }
             var result = await _UserService.GetSingleUser(username);
             if (result is null)
-                return NotFound("User not found!");
+                return NotFound(new { status = "failure", message = "User not found!" });
             return Ok(new { status = "success", data = result });
         }
 
@@ -85,7 +85,7 @@ namespace PBL3_Server.Controllers
             }
             var result = await _UserService.UpdateUser(username, request);
             if (result is null)
-                return NotFound("User not found!");
+                return NotFound(new { status = "failure", message = "User not found!" });
 
             return Ok(new { status = "success", data = result });
         }
@@ -101,7 +101,7 @@ namespace PBL3_Server.Controllers
             }
             var result = await _UserService.DeleteUser(username);
             if (result is null)
-                return NotFound("User not found!");
+                return NotFound(new { status = "failure" , message = "User not found!" });
 
             return Ok(new { status = "success", data = result });
         }

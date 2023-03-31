@@ -4,6 +4,6 @@
     {
         public string RoomID { get; set; } = string.Empty;
         public string RoomName { get; set; } = string.Empty;
-        public int DepartmentID { get; set; }
+        public string organizationID { get; set; } = string.Empty;
     }
 }

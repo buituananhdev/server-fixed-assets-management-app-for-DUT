@@ -7,5 +7,6 @@
         Task<List<DisposedAsset>> AddDisposedAsset(DisposedAsset asset);
         Task<List<DisposedAsset>?> UpdateDisposedAsset(int id, DisposedAsset request);
         Task<List<DisposedAsset>?> DeleteDisposedAsset(int id);
+        Task<List<DisposedAsset>?> CancelDisposeAsset(int id);
     }
 }

@@ -68,5 +68,32 @@ namespace PBL3_Server.Services.DisposedAssetService
             return DisposedAssets;
         }
 
+
+        public async Task<List<DisposedAsset>> CancelDisposeAsset(int id)
+        {
+            var disposedasset = await _context.DisposedAssets.FindAsync(id);
+            if (disposedasset is null)
+                return null;
+
+            var asset = new Asset
+            {
+                AssetID = disposedasset.AssetID,
+                DeviceID = disposedasset.DeviceID,
+                RoomID = disposedasset.RoomID,
+                AssetName = disposedasset.AssetName,
+                YearOfUse = disposedasset.YearOfUse,
+                TechnicalSpecification = disposedasset.TechnicalSpecification,
+                Status = "GOOD",
+                Quantity = disposedasset.Quantity,
+                Cost = disposedasset.Cost,
+                Notes = disposedasset.Notes
+            };
+
+            _context.Remove(disposedasset);
+            _context.Add(asset);
+            await _context.SaveChangesAsync();
+            return DisposedAssets;
+        }
+        
     }
 }
