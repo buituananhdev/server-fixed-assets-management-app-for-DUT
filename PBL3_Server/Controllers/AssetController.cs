@@ -26,7 +26,7 @@ namespace PBL3_Server.Controllers
         [Authorize]
         [HttpGet]
         // Hàm trả về danh sách tài sản 
-        public async Task<ActionResult<List<Asset>>> GetAllAssets(int pageNumber = 1, int pageSize = 10, string status = "", string room_id = "", string organization_id = "")
+        public async Task<ActionResult<List<Asset>>> GetAllAssets(int pageNumber = 1, int pageSize = 10, string status = "", string room_id = "", string organization_id = "", string searchQuery = "")
         {
             if (!User.Identity.IsAuthenticated)
             {
@@ -55,6 +55,23 @@ namespace PBL3_Server.Controllers
             if (!string.IsNullOrEmpty(room_id))
             {
                 assets = assets.Where(a => a.RoomID.ToLower() == room_id.ToLower()).ToList();
+            }
+
+            // tìm kiếm tài sản
+            if (!string.IsNullOrEmpty(searchQuery))
+            {
+                assets = assets.Where(a =>
+                    a.AssetID.ToString().ToLower() == searchQuery.ToLower() ||
+                    a.DeviceID.ToLower().Contains(searchQuery.ToLower()) ||
+                    a.AssetName.ToLower().Contains(searchQuery.ToLower()) ||
+                    a.Cost.ToString().ToLower().Contains(searchQuery.ToLower()) ||
+                    a.RoomID.ToLower().Contains(searchQuery.ToLower()) ||
+                    a.YearOfUse.ToString().ToLower().Contains(searchQuery.ToLower()) ||
+                    a.Status.ToLower().Contains(searchQuery.ToLower()) ||
+                    a.Quantity.ToString().ToLower().Contains(searchQuery.ToLower()) ||
+                    a.TechnicalSpecification.ToLower().Contains(searchQuery.ToLower()) ||
+                    a.Quantity.ToString().ToLower().Contains(searchQuery.ToLower())
+                ).ToList();
             }
 
             var pagedAssets = assets.ToPagedList(pageNumber, pageSize);
