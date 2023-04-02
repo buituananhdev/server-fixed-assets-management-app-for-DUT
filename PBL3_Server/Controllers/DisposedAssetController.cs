@@ -15,27 +15,39 @@ namespace PBL3_Server.Controllers
     public class DisposedAssetController : ControllerBase
     {
         private readonly IDisposedAssetService _DisposedAssetService;
+        private readonly IRoomService _RoomService;
 
-        public DisposedAssetController(IDisposedAssetService DisposedAssetService)
+        public DisposedAssetController(IDisposedAssetService DisposedAssetService, IRoomService RoomService)
         {
             _DisposedAssetService = DisposedAssetService;
+            _RoomService = RoomService;
         }
 
         [Authorize]
         [HttpGet]
-        public async Task<ActionResult<List<DisposedAsset>>> GetAllDisposedAssets(int pageNumber = 1, int pageSize = 10, DateTime? dateDisposed = null)
+        public async Task<ActionResult<List<DisposedAsset>>> GetAllDisposedAssets(int pageNumber = 1, int pageSize = 10, DateTime? startDate = null, DateTime? endDate = null, string organization_id = "")
         {
             if (!User.Identity.IsAuthenticated)
             {
                 return Unauthorized(new { message = "You don't have permission to access this page" });
             }
             var assets = await _DisposedAssetService.GetAllDisposedAssets();
-            var pagedAssets = assets.ToPagedList(pageNumber, pageSize);
-            if (dateDisposed.HasValue)
+
+            // Lọc tài sản theo mã khoa của phòng
+            if (!string.IsNullOrEmpty(organization_id))
             {
-                assets = assets.Where(a => a.DateDisposed == dateDisposed.Value).ToList();
+                var rooms = await _RoomService.GetAllRooms();
+                rooms = rooms.Where(r => r.organizationID.ToLower() == organization_id.ToLower()).ToList();
+                assets = assets.Where(a => rooms.Any(r => r.RoomID == a.RoomID)).ToList();
             }
 
+            // lọc tài sản theo ngày thanh lý nằm trong start date và end date
+            if (startDate.HasValue && endDate.HasValue)
+            {
+                assets = assets.Where(a => a.DateDisposed >= startDate.Value && a.DateDisposed <= endDate.Value).ToList();
+            }
+
+            var pagedAssets = assets.ToPagedList(pageNumber, pageSize);
             //Tạo đối tượng paginationInfo để lưu thông tin phân trang
             var paginationInfo = new PaginationInfo
             {

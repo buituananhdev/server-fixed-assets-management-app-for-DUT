@@ -15,33 +15,50 @@ namespace PBL3_Server.Controllers
     {
 
         private readonly IAssetService _AssetService;
+        private readonly IRoomService _RoomService;
 
-        public AssetController(IAssetService AssetService)
+        public AssetController(IAssetService AssetService, IRoomService RoomService)
         {
             _AssetService = AssetService;
+            _RoomService = RoomService;
         }
 
         [Authorize]
         [HttpGet]
         // Hàm trả về danh sách tài sản 
-        public async Task<ActionResult<List<Asset>>> GetAllAssets(int pageNumber = 1, int pageSize = 10, string status = "", string room_id = "")
+        public async Task<ActionResult<List<Asset>>> GetAllAssets(int pageNumber = 1, int pageSize = 10, string status = "", string room_id = "", string organization_id = "")
         {
             if (!User.Identity.IsAuthenticated)
             {
                 return Ok(new { message = "You don't have permission to access this page" });
             }
+            
+            // Lấy danh sách tài sản và join với bảng Room để lấy thông tin phòng tài sản
 
             var assets = await _AssetService.GetAllAssets();
+
+            // Lọc tài sản theo mã khoa của phòng
+            if (!string.IsNullOrEmpty(organization_id))
+            {
+                var rooms = await _RoomService.GetAllRooms();
+                rooms = rooms.Where(r => r.organizationID.ToLower() == organization_id.ToLower()).ToList();
+                assets = assets.Where(a => rooms.Any(r => r.RoomID == a.RoomID)).ToList();
+            }
+
+            // Lọc tài sản theo trạng thái nếu status khác rỗng
             if (!string.IsNullOrEmpty(status))
             {
                 assets = assets.Where(a => a.Status.ToLower() == status.ToLower()).ToList();
             }
 
+            // Lọc tài sản theo mã phòng nếu room_id khác rỗng
             if (!string.IsNullOrEmpty(room_id))
             {
                 assets = assets.Where(a => a.RoomID.ToLower() == room_id.ToLower()).ToList();
             }
+
             var pagedAssets = assets.ToPagedList(pageNumber, pageSize);
+
 
             //Tạo đối tượng paginationInfo để lưu thông tin phân trang
             var paginationInfo = new PaginationInfo
