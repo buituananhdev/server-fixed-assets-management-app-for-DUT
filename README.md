@@ -1,2 +1,2 @@
 # PBL3-server-fixed-assets-management-app-for-DUT
-# A project using ASP.NET core web api (.NET7)
+## A project using ASP.NET core web api (.NET 7)
