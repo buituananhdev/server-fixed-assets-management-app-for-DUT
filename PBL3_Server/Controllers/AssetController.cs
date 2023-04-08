@@ -13,7 +13,6 @@ namespace PBL3_Server.Controllers
     [ApiController] // ApiController đảm bảo rằng nếu một truy vấn không hợp lệ được thực hiện, sẽ trả về kết quả BadRequest (400)
     public class AssetController : ControllerBase
     {
-
         private readonly IAssetService _AssetService;
         private readonly IRoomService _RoomService;
 
@@ -70,7 +69,8 @@ namespace PBL3_Server.Controllers
                     a.Status.ToLower().Contains(searchQuery.ToLower()) ||
                     a.Quantity.ToString().ToLower().Contains(searchQuery.ToLower()) ||
                     a.TechnicalSpecification.ToLower().Contains(searchQuery.ToLower()) ||
-                    a.Quantity.ToString().ToLower().Contains(searchQuery.ToLower())
+                    a.Quantity.ToString().ToLower().Contains(searchQuery.ToLower()) ||
+                    a.Notes.ToLower().Contains(searchQuery.ToLower())
                 ).ToList();
             }
 

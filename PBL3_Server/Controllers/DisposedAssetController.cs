@@ -25,7 +25,7 @@ namespace PBL3_Server.Controllers
 
         [Authorize]
         [HttpGet]
-        public async Task<ActionResult<List<DisposedAsset>>> GetAllDisposedAssets(int pageNumber = 1, int pageSize = 10, DateTime? startDate = null, DateTime? endDate = null, string organization_id = "")
+        public async Task<ActionResult<List<DisposedAsset>>> GetAllDisposedAssets(int pageNumber = 1, int pageSize = 10, DateTime? startDate = null, DateTime? endDate = null, string organization_id = "", string searchQuery = "")
         {
             if (!User.Identity.IsAuthenticated)
             {
@@ -45,6 +45,23 @@ namespace PBL3_Server.Controllers
             if (startDate.HasValue && endDate.HasValue)
             {
                 assets = assets.Where(a => a.DateDisposed >= startDate.Value && a.DateDisposed <= endDate.Value).ToList();
+            }
+
+            // tìm kiếm tài sản
+            if (!string.IsNullOrEmpty(searchQuery))
+            {
+                assets = assets.Where(a =>
+                    a.AssetID.ToString().ToLower() == searchQuery.ToLower() ||
+                    a.DeviceID.ToLower().Contains(searchQuery.ToLower()) ||
+                    a.AssetName.ToLower().Contains(searchQuery.ToLower()) ||
+                    a.Cost.ToString().ToLower().Contains(searchQuery.ToLower()) ||
+                    a.RoomID.ToLower().Contains(searchQuery.ToLower()) ||
+                    a.YearOfUse.ToString().ToLower().Contains(searchQuery.ToLower()) ||
+                    a.Quantity.ToString().ToLower().Contains(searchQuery.ToLower()) ||
+                    a.TechnicalSpecification.ToLower().Contains(searchQuery.ToLower()) ||
+                    a.Quantity.ToString().ToLower().Contains(searchQuery.ToLower()) ||
+                    a.Notes.ToLower().Contains(searchQuery.ToLower())
+                ).ToList();
             }
 
             var pagedAssets = assets.ToPagedList(pageNumber, pageSize);
