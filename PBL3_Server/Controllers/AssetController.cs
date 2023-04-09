@@ -94,6 +94,7 @@ namespace PBL3_Server.Controllers
                     worksheet.Cells[4, 1].Value = "BẢNG KIỂM KÊ, ĐÁNH GIÁ TÀI SẢN";
                     worksheet.Cells[4, 1].Style.Font.Bold = true;
                     worksheet.Cells[4, 1].Style.Font.Size = 22;
+
                     // Thêm tiêu đề cho sheet
                     worksheet.Cells[6, 1].Value = "Mã TS";
                     worksheet.Cells[6, 2].Value = "Mã số TB";
@@ -103,6 +104,7 @@ namespace PBL3_Server.Controllers
                     worksheet.Cells[6, 6].Value = "Thành tiền";
                     worksheet.Cells[6, 7].Value = "Trạng thái";
                     worksheet.Cells[6, 8].Value = "Ghi chú";
+
                     // Add data từ mảng assets vào file Excel
                     for (int i = 0; i < assets.Count; i++)
                     {
