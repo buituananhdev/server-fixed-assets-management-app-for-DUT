@@ -5,7 +5,7 @@ namespace PBL3_Server.Models
     public class DisposedAsset
     {
         [Key]
-        public int AssetID { get; set; }
+        public string AssetID { get; set; } = string.Empty;
         public string DeviceID { get; set; } = string.Empty;
         public string RoomID { get; set; } = string.Empty;
         public string AssetName { get; set; } = string.Empty;
@@ -14,6 +14,7 @@ namespace PBL3_Server.Models
         public int Quantity { get; set; }
         public double Cost { get; set; }
         public DateTime DateDisposed { get; set; } = DateTime.UtcNow;
+        public string Status { get; set; } = string.Empty;
         public string Notes { get; set; } = string.Empty;
     }
 }

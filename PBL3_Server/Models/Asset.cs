@@ -2,7 +2,7 @@
 {
     public class Asset
     {
-        public int AssetID { get; set; }
+        public string AssetID { get; set; } = string.Empty;
         public string DeviceID { get; set; } = string.Empty;
         public string RoomID { get; set; } = string.Empty;
         public string AssetName { get; set; } = string.Empty;

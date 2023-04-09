@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using PBL3_Server.Models;
 using PBL3_Server.Services.RoomService;
 using PBL3_Server.Services.UserService;
 using System.Data;
@@ -47,13 +48,13 @@ namespace PBL3_Server.Controllers
         [Authorize(Roles = "admin")]
         [HttpGet("{username}")]
         // Hàm trả về thông tin của user qua ID
-        public async Task<ActionResult<User>> GetSingleUser(string username)
+        public async Task<ActionResult<User>> GetSingleUser(string userID)
         {
             if (!User.Identity.IsAuthenticated)
             {
                 return Unauthorized(new { message = "You don't have permission to access this page" });
             }
-            var result = await _UserService.GetSingleUser(username);
+            var result = await _UserService.GetSingleUser(userID);
             if (result is null)
                 return NotFound(new { status = "failure", message = "User not found!" });
             return Ok(new { status = "success", data = result });
@@ -70,6 +71,7 @@ namespace PBL3_Server.Controllers
             }
             string hashedPassword = BCrypt.Net.BCrypt.HashPassword(user.Password);
             user.Password = hashedPassword;
+            user.UserID = Guid.NewGuid().ToString();
             var result = await _UserService.AddUser(user);
             return Ok(new { status = "success", data = result });
         }
@@ -77,13 +79,13 @@ namespace PBL3_Server.Controllers
         [Authorize(Roles = "admin")]
         [HttpPut("{username}")]
         //Hàm cập nhật user
-        public async Task<ActionResult<List<User>>> UpdateUser(string username, User request)
+        public async Task<ActionResult<List<User>>> UpdateUser(string userID, User request)
         {
             if (!User.Identity.IsAuthenticated)
             {
                 return Unauthorized(new { message = "You don't have permission to access this page" });
             }
-            var result = await _UserService.UpdateUser(username, request);
+            var result = await _UserService.UpdateUser(userID, request);
             if (result is null)
                 return NotFound(new { status = "failure", message = "User not found!" });
 
@@ -93,13 +95,13 @@ namespace PBL3_Server.Controllers
         [Authorize(Roles = "admin")]
         [HttpDelete("{username}")]
         // Hàm xóa user theo ID
-        public async Task<ActionResult<List<User>>> DeleteUser(string username)
+        public async Task<ActionResult<List<User>>> DeleteUser(string userID)
         {
             if (!User.Identity.IsAuthenticated)
             {
                 return Unauthorized(new { message = "You don't have permission to access this page" });
             }
-            var result = await _UserService.DeleteUser(username);
+            var result = await _UserService.DeleteUser(userID);
             if (result is null)
                 return NotFound(new { status = "failure" , message = "User not found!" });
 

@@ -3,10 +3,10 @@
     public interface IDisposedAssetService
     {
         Task<List<DisposedAsset>> GetAllDisposedAssets();
-        Task<DisposedAsset?> GetSingleDisposedAsset(int id);
+        Task<DisposedAsset?> GetSingleDisposedAsset(string id);
         Task<List<DisposedAsset>> AddDisposedAsset(DisposedAsset asset);
-        Task<List<DisposedAsset>?> UpdateDisposedAsset(int id, DisposedAsset request);
-        Task<List<DisposedAsset>?> DeleteDisposedAsset(int id);
-        Task<List<DisposedAsset>?> CancelDisposeAsset(int id);
+        Task<List<DisposedAsset>?> UpdateDisposedAsset(string id, DisposedAsset request);
+        Task<List<DisposedAsset>?> DeleteDisposedAsset(string id);
+        Task<List<DisposedAsset>?> CancelDisposeAsset(string id);
     }
 }
