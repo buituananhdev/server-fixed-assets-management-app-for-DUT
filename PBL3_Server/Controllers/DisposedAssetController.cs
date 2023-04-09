@@ -51,7 +51,7 @@ namespace PBL3_Server.Controllers
             if (!string.IsNullOrEmpty(searchQuery))
             {
                 assets = assets.Where(a =>
-                    a.AssetID.ToString().ToLower() == searchQuery.ToLower() ||
+                    a.AssetID.ToLower() == searchQuery.ToLower() ||
                     a.DeviceID.ToLower().Contains(searchQuery.ToLower()) ||
                     a.AssetName.ToLower().Contains(searchQuery.ToLower()) ||
                     a.Cost.ToString().ToLower().Contains(searchQuery.ToLower()) ||
@@ -79,7 +79,7 @@ namespace PBL3_Server.Controllers
 
         [Authorize]
         [HttpGet("{id}")]
-        public async Task<ActionResult<DisposedAsset>> GetSingleDisposedAsset(int id)
+        public async Task<ActionResult<DisposedAsset>> GetSingleDisposedAsset(string id)
         {
             if (!User.Identity.IsAuthenticated)
             {
@@ -100,13 +100,14 @@ namespace PBL3_Server.Controllers
             {
                 return Unauthorized(new { message = "You don't have permission to access this page" });
             }
+            asset.AssetID = Guid.NewGuid().ToString();
             var result = await _DisposedAssetService.AddDisposedAsset(asset);
             return Ok(new { status = "success", data = result });
         }
 
         [Authorize]
         [HttpPut("{id}")]
-        public async Task<ActionResult<List<DisposedAsset>>> UpdateDisposedAsset(int id, DisposedAsset request)
+        public async Task<ActionResult<List<DisposedAsset>>> UpdateDisposedAsset(string id, DisposedAsset request)
         {
             if (!User.Identity.IsAuthenticated)
             {
@@ -121,7 +122,7 @@ namespace PBL3_Server.Controllers
 
         [Authorize]
         [HttpDelete("{id}")]
-        public async Task<ActionResult<List<DisposedAsset>>> DeleteDisposedAsset(int id)
+        public async Task<ActionResult<List<DisposedAsset>>> DeleteDisposedAsset(string id)
         {
             if (!User.Identity.IsAuthenticated)
             {
@@ -137,7 +138,7 @@ namespace PBL3_Server.Controllers
         [Authorize]
         [HttpPost("{id}")]
         // Hàm hủy thanh lý tài sản theo ID
-        public async Task<ActionResult<List<DisposedAsset>>> CancelDisposeAsset(int id)
+        public async Task<ActionResult<List<DisposedAsset>>> CancelDisposeAsset(string id)
         {
             if (!User.Identity.IsAuthenticated)
             {

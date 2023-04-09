@@ -19,9 +19,9 @@
             return Users;
         }
 
-        public async Task<List<User>> DeleteUser(string username)
+        public async Task<List<User>> DeleteUser(string userID)
         {
-            var user = await _context.Users.FindAsync(username);
+            var user = await _context.Users.FindAsync(userID);
             if (user is null)
                 return null;
             _context.Remove(user);
@@ -35,17 +35,17 @@
             return users;
         }
 
-        public async Task<User> GetSingleUser(string username)
+        public async Task<User> GetSingleUser(string userID)
         {
-            var user = await _context.Users.FindAsync(username);
+            var user = await _context.Users.FindAsync(userID);
             if (user is null)
                 return null;
             return user;
         }
 
-        public async Task<List<User>> UpdateUser(string username, User request)
+        public async Task<List<User>> UpdateUser(string userID, User request)
         {
-            var user = await _context.Users.FindAsync(username);
+            var user = await _context.Users.FindAsync(userID);
             if (user is null)
                 return null;
 

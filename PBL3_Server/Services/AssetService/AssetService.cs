@@ -22,7 +22,7 @@ namespace PBL3_Server.Services.AssetService
             return Assets;
         }
 
-        public async Task<List<Asset>> DeleteAsset(int id)
+        public async Task<List<Asset>> DeleteAsset(string id)
         {
             var asset = await _context.Assets.FindAsync(id);
             if (asset is null)
@@ -38,7 +38,7 @@ namespace PBL3_Server.Services.AssetService
             return assets;
         }
 
-        public async Task<Asset> GetSingleAsset(int id)
+        public async Task<Asset> GetSingleAsset(string id)
         {
             var asset = await _context.Assets.FindAsync(id);
             if (asset is null)
@@ -46,7 +46,7 @@ namespace PBL3_Server.Services.AssetService
             return asset;
         }
 
-        public async Task<List<Asset>> UpdateAsset(int id, Asset request)
+        public async Task<List<Asset>> UpdateAsset(string id, Asset request)
         {
             var asset = await _context.Assets.FindAsync(id);
             if (asset is null)
@@ -67,11 +67,11 @@ namespace PBL3_Server.Services.AssetService
 
             return Assets;
         }
-        public async Task<List<Asset>> DisposedAsset(int id)
+        public async Task<List<Asset>> DisposedAsset(string id)
         {
             var asset = await _context.Assets.FindAsync(id);
             if (asset is null)
-                return null;
+                return null;   
             var disposedAsset = new DisposedAsset
             {
                 AssetID = asset.AssetID,
@@ -83,6 +83,7 @@ namespace PBL3_Server.Services.AssetService
                 Quantity = asset.Quantity,
                 Cost = asset.Cost,
                 DateDisposed = DateTime.Now,
+                Status = asset.Status,
                 Notes = asset.Notes
             };
             

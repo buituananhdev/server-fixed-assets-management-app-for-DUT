@@ -22,7 +22,7 @@ namespace PBL3_Server.Services.DisposedAssetService
             return DisposedAssets;
         }
 
-        public async Task<List<DisposedAsset>?> DeleteDisposedAsset(int id)
+        public async Task<List<DisposedAsset>?> DeleteDisposedAsset(string id)
         {
             var asset = await _context.DisposedAssets.FindAsync(id);
             if (asset is null)
@@ -38,7 +38,7 @@ namespace PBL3_Server.Services.DisposedAssetService
             return assets;
         }
 
-        public async Task<DisposedAsset?> GetSingleDisposedAsset(int id)
+        public async Task<DisposedAsset?> GetSingleDisposedAsset(string id)
         {
             var asset = await _context.DisposedAssets.FindAsync(id);
             if (asset is null)
@@ -46,7 +46,7 @@ namespace PBL3_Server.Services.DisposedAssetService
             return asset;
         }
 
-        public async Task<List<DisposedAsset>?> UpdateDisposedAsset(int id, DisposedAsset request)
+        public async Task<List<DisposedAsset>?> UpdateDisposedAsset(string id, DisposedAsset request)
         {
             var asset = await _context.DisposedAssets.FindAsync(id);
             if (asset is null)
@@ -69,7 +69,7 @@ namespace PBL3_Server.Services.DisposedAssetService
         }
 
 
-        public async Task<List<DisposedAsset>> CancelDisposeAsset(int id)
+        public async Task<List<DisposedAsset>> CancelDisposeAsset(string id)
         {
             var disposedasset = await _context.DisposedAssets.FindAsync(id);
             if (disposedasset is null)
@@ -83,7 +83,7 @@ namespace PBL3_Server.Services.DisposedAssetService
                 AssetName = disposedasset.AssetName,
                 YearOfUse = disposedasset.YearOfUse,
                 TechnicalSpecification = disposedasset.TechnicalSpecification,
-                Status = "GOOD",
+                Status = disposedasset.Status,
                 Quantity = disposedasset.Quantity,
                 Cost = disposedasset.Cost,
                 Notes = disposedasset.Notes

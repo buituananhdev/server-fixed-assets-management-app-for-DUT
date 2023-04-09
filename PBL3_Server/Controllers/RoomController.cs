@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using PBL3_Server.Models;
 using PBL3_Server.Services.RoomService;
 using X.PagedList;
 
@@ -20,7 +21,7 @@ namespace PBL3_Server.Controllers
         [Authorize]
         [HttpGet]
         // Hàm trả về danh sách phòng 
-        public async Task<ActionResult<List<Asset>>> GetAllRooms(int pageNumber = 1, int pageSize = 10, string organization_id = "")
+        public async Task<ActionResult<List<Asset>>> GetAllRooms(int pageNumber = 1, int pageSize = -1, string organization_id = "")
         {
             if (!User.Identity.IsAuthenticated)
             {
@@ -28,7 +29,10 @@ namespace PBL3_Server.Controllers
             }
 
             var rooms = await _RoomService.GetAllRooms();
-
+            if (pageSize == -1)
+            {
+                pageSize = rooms.Count;
+            }
             if (!string.IsNullOrEmpty(organization_id))
             {
                 rooms = rooms.Where(a => a.organizationID.ToLower() == organization_id.ToLower()).ToList();
