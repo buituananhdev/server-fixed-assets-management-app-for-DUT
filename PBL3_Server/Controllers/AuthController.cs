@@ -70,7 +70,7 @@ namespace PBL3_Server.Controllers
 
             // Trả về token và refresh token cho client
 
-            return Ok(new { Token = tokenHandler.WriteToken(jwtToken), Refresh_Token = refreshToken, ExpirationTime = DateTime.UtcNow.AddDays(1), AccessTime = DateTime.Now, Username = user.Username, Role = user.UserRole });
+            return Ok(new { Token = tokenHandler.WriteToken(jwtToken), Refresh_Token = refreshToken, ExpirationTime = DateTime.UtcNow.AddDays(1), AccessTime = DateTime.Now, Username = user.Username, FullName = user.FullName, Role = user.UserRole });
         }
 
         [HttpPost("logout")]

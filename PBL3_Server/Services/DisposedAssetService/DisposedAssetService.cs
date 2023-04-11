@@ -1,5 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using PBL3_Server.Models;
+using X.PagedList;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace PBL3_Server.Services.DisposedAssetService
 {
@@ -94,6 +97,40 @@ namespace PBL3_Server.Services.DisposedAssetService
             await _context.SaveChangesAsync();
             return DisposedAssets;
         }
-        
+
+        public async Task<int> StatisticDisposeAsset(string organization_id, string room_id, int year_of_use, string year_dispose)
+        {
+            IQueryable<DisposedAsset> assets = _context.DisposedAssets;
+
+            if (!string.IsNullOrEmpty(organization_id))
+            {
+                IQueryable<Room> rooms = _context.Rooms
+                    .Where(r => r.organizationID.ToLower() == organization_id.ToLower());
+
+                assets = assets.Where(a => rooms.Any(r => r.RoomID == a.RoomID));
+            }
+
+            if (!string.IsNullOrEmpty(room_id))
+            {
+                assets = assets.Where(a => a.RoomID == room_id);
+            }
+
+            if (year_of_use > 0)
+            {
+                assets = assets.Where(a => a.YearOfUse == year_of_use);
+            }
+
+            if (!string.IsNullOrEmpty(year_dispose))
+            {
+                int year;
+                if (int.TryParse(year_dispose, out year))
+                {
+                    assets = assets.Where(a => a.DateDisposed.Year == year);
+                }
+            }
+            int count = await assets.CountAsync();
+            return count;
+        }
+
     }
 }

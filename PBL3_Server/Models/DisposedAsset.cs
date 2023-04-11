@@ -14,7 +14,7 @@ namespace PBL3_Server.Models
         public int Quantity { get; set; }
         public double Cost { get; set; }
         public DateTime DateDisposed { get; set; } = DateTime.UtcNow;
-        public string Status { get; set; } = string.Empty;
-        public string Notes { get; set; } = string.Empty;
+        public string Status { get; set; } = "Hoạt động tốt";
+        public string Notes { get; set; } = "Không có ghi chú";
     }
 }

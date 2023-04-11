@@ -86,7 +86,6 @@ namespace PBL3_Server.Controllers
                 using (var package = new ExcelPackage(stream))
                 {
                     var worksheet = package.Workbook.Worksheets.Add("Danh sách");
-
                     worksheet.Cells[1, 1].Value = "Trường Đại học Bách khoa";
                     worksheet.Cells[1, 1].Style.Font.Bold = true;
                     worksheet.Cells[2, 1].Value = "Khoa Công nghệ thông tin";
