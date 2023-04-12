@@ -60,6 +60,7 @@ namespace PBL3_Server.Services.AssetService
             asset.TechnicalSpecification = request.TechnicalSpecification;
             asset.Quantity = request.Quantity;
             asset.Cost = request.Cost;
+            asset.PercentageCL = request.PercentageCL;
             asset.Status = request.Status;
             asset.Notes = request.Notes;
 
@@ -82,6 +83,7 @@ namespace PBL3_Server.Services.AssetService
                 TechnicalSpecification = asset.TechnicalSpecification,
                 Quantity = asset.Quantity,
                 Cost = asset.Cost,
+                PercentageCL = asset.PercentageCL,
                 DateDisposed = DateTime.Now,
                 Status = asset.Status,
                 Notes = asset.Notes
