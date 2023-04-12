@@ -63,6 +63,7 @@ namespace PBL3_Server.Services.DisposedAssetService
             asset.TechnicalSpecification = request.TechnicalSpecification;
             asset.Quantity = request.Quantity;
             asset.Cost = request.Cost;
+            asset.PercentageCL = request.PercentageCL;
             asset.DateDisposed = request.DateDisposed;
             asset.Notes = request.Notes;
 
@@ -89,6 +90,7 @@ namespace PBL3_Server.Services.DisposedAssetService
                 Status = disposedasset.Status,
                 Quantity = disposedasset.Quantity,
                 Cost = disposedasset.Cost,
+                PercentageCL = disposedasset.PercentageCL,
                 Notes = disposedasset.Notes
             };
 

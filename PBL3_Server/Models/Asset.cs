@@ -10,6 +10,7 @@
         public string TechnicalSpecification { get; set; } = string.Empty;
         public int Quantity { get; set; }
         public double Cost { get; set; }
+        public double PercentageCL { get; set; }
         public string Status { get; set; } = "Hoạt động tốt"; 
         public string Notes { get; set; } = "Không có ghi chú";
     }
