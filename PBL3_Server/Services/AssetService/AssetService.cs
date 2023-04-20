@@ -1,16 +1,15 @@
-﻿using Microsoft.EntityFrameworkCore;
-using PBL3_Server.Services.RoomService;
+﻿using PBL3_Server.Services.RoomService;
 
 namespace PBL3_Server.Services.AssetService
 {
     public class AssetService : IAssetService
     {
         private static List<Asset> Assets = new List<Asset>();
-            
+
 
         private readonly DataContext _context;
 
-        public AssetService(DataContext context) 
+        public AssetService(DataContext context)
         {
             _context = context;
         }
@@ -72,7 +71,7 @@ namespace PBL3_Server.Services.AssetService
         {
             var asset = await _context.Assets.FindAsync(id);
             if (asset is null)
-                return null;   
+                return null;
             var disposedAsset = new DisposedAsset
             {
                 AssetID = asset.AssetID,
@@ -88,11 +87,37 @@ namespace PBL3_Server.Services.AssetService
                 Status = asset.Status,
                 Notes = asset.Notes
             };
-            
+
             _context.Remove(asset);
             _context.Add(disposedAsset);
             await _context.SaveChangesAsync();
             return Assets;
+        }
+
+        public async Task<int> StatisticAsset(string organization_id, int year_of_use, string status)
+        {
+            IQueryable<Asset> assets = _context.Assets;
+
+            if (!string.IsNullOrEmpty(organization_id))
+            {
+                IQueryable<Room> rooms = _context.Rooms
+                    .Where(r => r.organizationID.ToLower() == organization_id.ToLower());
+
+                assets = assets.Where(a => rooms.Any(r => r.RoomID == a.RoomID));
+            }
+
+            if (year_of_use > 0)
+            {
+                assets = assets.Where(a => a.YearOfUse == year_of_use);
+            }
+
+            if (!string.IsNullOrEmpty(status))
+            {
+                assets = assets.Where(a => a.Status == status);
+            }
+
+            int count = await assets.CountAsync();
+            return count;
         }
     }
 }

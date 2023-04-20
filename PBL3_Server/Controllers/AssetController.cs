@@ -1,14 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml;
-using OfficeOpenXml.Style;
-using PBL3_Server.Models;
+using PBL3_Server.Services.DisposedAssetService;
 using PBL3_Server.Services.RoomService;
 using System.Data;
 using X.PagedList;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace PBL3_Server.Controllers
 {
@@ -18,11 +14,13 @@ namespace PBL3_Server.Controllers
     {
         private readonly IAssetService _AssetService;
         private readonly IRoomService _RoomService;
+        private readonly IDisposedAssetService _DisposedAssetService;
 
-        public AssetController(IAssetService AssetService, IRoomService RoomService)
+        public AssetController(IAssetService AssetService, IDisposedAssetService DisposedAssetService, IRoomService RoomService)
         {
             _AssetService = AssetService;
             _RoomService = RoomService;
+            _DisposedAssetService = DisposedAssetService;
         }
 
         [Authorize]
@@ -170,7 +168,7 @@ namespace PBL3_Server.Controllers
             var result = await _AssetService.GetSingleAsset(id);
             if (result is null)
                 return NotFound(new { status = "failure", message = "Asset not found!" });
-            return Ok(new { status = "success", data = result});
+            return Ok(new { status = "success", data = result });
         }
 
         [Authorize]
@@ -233,6 +231,95 @@ namespace PBL3_Server.Controllers
                 return NotFound(new { status = "failure", message = "Asset not found!" });
 
             return Ok(new { status = "success", data = result });
+        }
+
+        [Authorize]
+        [HttpGet("statistic")]
+        public async Task<ActionResult> StatisticDisposeAsset(string organization_id = "", int year_of_use = 0, int year_dispose = 0)
+        {
+            var count_good = await _AssetService.StatisticAsset(organization_id, year_of_use, "Hoạt động tốt");
+            var count_broken = await _AssetService.StatisticAsset(organization_id, year_of_use, "Hư hỏng, cần được sửa chữa");
+            var count_maintenance = await _AssetService.StatisticAsset(organization_id, year_of_use, "Đang bảo dưỡng");
+            var count_disposed = await _DisposedAssetService.StatisticDisposeAsset(organization_id, year_of_use, year_dispose);
+            var total = count_good + count_broken + count_disposed + count_maintenance;
+
+            var countStatus = (
+                total: total,
+                count_good: count_good,
+                count_broken: count_broken,
+                count_maintenance: count_maintenance,
+                count_disposed: count_disposed
+            );
+
+            if (year_dispose == 0)
+            {
+                var soldAssets = await _DisposedAssetService.GetAllDisposedAssets();
+
+                // Nhóm các tài sản theo tháng và đếm số lượng tài sản trong mỗi nhóm
+                var soldAssetsByMonth = soldAssets
+                    .GroupBy(asset => asset.DateDisposed.ToString("yyyy-MM"))
+                    .Select(group => new
+                    {
+                        Month = group.Key,
+                        Count = group.Count()
+                    });
+
+                // Tạo danh sách chứa tất cả các tháng
+                var allMonths = Enumerable.Range(1, 12)
+                    .SelectMany(year => Enumerable.Range(1, 12).Select(month => new DateTime(year, month, 1)))
+                    .Select(date => date.ToString("yyyy-MM"));
+
+                // Kết hợp danh sách các tháng với danh sách tài sản đã thanh lý theo tháng
+                var countDisposeMonth = allMonths
+                    .GroupJoin(
+                        soldAssetsByMonth,
+                        month => month,
+                        soldAsset => soldAsset.Month,
+                        (month, soldAssetGroup) => new
+                        {
+                            Month = month,
+                            Count = soldAssetGroup.Select(soldAsset => soldAsset.Count).DefaultIfEmpty(0).Sum()
+                        }
+                    )
+                    .OrderBy(entry => entry.Month)
+                    .ToList();
+                return Ok(new { status = "success", data = new { countStatus = countStatus, countDisposeMonth = countDisposeMonth } });
+            }
+            else
+            {
+                var soldAssets = await _DisposedAssetService.GetAllDisposedAssets();
+                var soldAssetsInYear = soldAssets.Where(asset => asset.DateDisposed.Year == year_dispose);
+
+                // Nhóm các tài sản theo tháng và đếm số lượng tài sản trong mỗi nhóm
+                var soldAssetsByMonth = soldAssetsInYear
+                    .GroupBy(asset => asset.DateDisposed.ToString("yyyy-MM"))
+                    .Select(group => new
+                    {
+                        Month = group.Key,
+                        Count = group.Count()
+                    });
+
+                // Tạo danh sách chứa tất cả các tháng trong năm
+                var allMonths = Enumerable.Range(1, 12)
+                    .Select(month => new DateTime(year_dispose, month, 1))
+                    .Select(date => date.ToString("yyyy-MM"));
+
+                // Kết hợp danh sách các tháng với danh sách tài sản đã thanh lý theo tháng
+                var countDisposeMonth = allMonths
+                    .GroupJoin(
+                        soldAssetsByMonth,
+                        month => month,
+                        soldAsset => soldAsset.Month,
+                        (month, soldAssetGroup) => new
+                        {
+                            Month = month,
+                            Count = soldAssetGroup.Select(soldAsset => soldAsset.Count).DefaultIfEmpty(0).Sum()
+                        }
+                    )
+                    .OrderBy(entry => entry.Month)
+                    .ToList();
+                return Ok(new { status = "success", data = new { countStatus = countStatus, countDisposeMonth = countDisposeMonth } });
+            }
         }
     }
 }
