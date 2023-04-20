@@ -8,5 +8,6 @@
         Task<List<Asset>?> UpdateAsset(string id, Asset request);
         Task<List<Asset>?> DeleteAsset(string id);
         Task<List<Asset>?> DisposedAsset(string id);
+        Task<int> StatisticAsset(string organization_id, int year_of_use, string status);
     }
 }

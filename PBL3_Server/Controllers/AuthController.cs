@@ -1,14 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.JsonWebTokens;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
-using PBL3_Server.Models;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using BCrypt.Net;
 
 namespace PBL3_Server.Controllers
 {
@@ -24,7 +18,7 @@ namespace PBL3_Server.Controllers
             _configuration = configuration;
         }
         public static User user = new User();
-        
+
 
         [HttpPost("login")]
         public IActionResult Login(User request)
@@ -33,7 +27,7 @@ namespace PBL3_Server.Controllers
             var user = _dbContext.Users.SingleOrDefault(u => u.Username == request.Username);
             if (user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.Password))
             {
-                return BadRequest(new {status = "failure", message = "Incorrect username or password!"});
+                return BadRequest(new { status = "failure", message = "Incorrect username or password!" });
             }
 
             // Tạo token và refresh token
@@ -80,7 +74,7 @@ namespace PBL3_Server.Controllers
             var token = HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
             if (string.IsNullOrEmpty(token))
             {
-                return BadRequest(new {status= "failure", message= "Invalid token"});
+                return BadRequest(new { status = "failure", message = "Invalid token" });
             }
 
             // Validate the token and extract the username

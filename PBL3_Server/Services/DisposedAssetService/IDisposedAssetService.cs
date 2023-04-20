@@ -8,6 +8,6 @@
         Task<List<DisposedAsset>?> UpdateDisposedAsset(string id, DisposedAsset request);
         Task<List<DisposedAsset>?> DeleteDisposedAsset(string id);
         Task<List<DisposedAsset>?> CancelDisposeAsset(string id);
-        Task<int> StatisticDisposeAsset(string organization_id, string room_id, int year_of_use, string year_dispose);
+        Task<int> StatisticDisposeAsset(string organization_id, int year_of_use, int year_dispose);
     }
 }

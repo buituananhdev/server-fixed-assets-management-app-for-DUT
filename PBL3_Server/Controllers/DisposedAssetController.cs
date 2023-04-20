@@ -1,12 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OfficeOpenXml;
-using PBL3_Server.Models;
-using PBL3_Server.Services.AssetService;
 using PBL3_Server.Services.DisposedAssetService;
 using PBL3_Server.Services.RoomService;
-using System;
 using System.Data;
 using X.PagedList;
 
@@ -84,30 +80,32 @@ namespace PBL3_Server.Controllers
                     // Thêm tiêu đề cho sheet
                     worksheet.Cells[6, 1].Value = "Mã TS";
                     worksheet.Cells[6, 2].Value = "Mã số TB";
-                    worksheet.Cells[6, 3].Value = "Năm sử dụng";
-                    worksheet.Cells[6, 4].Value = "Thông số kỹ thuật";
-                    worksheet.Cells[6, 5].Value = "Số lượng";
-                    worksheet.Cells[6, 6].Value = "Thành tiền";
-                    worksheet.Cells[6, 7].Value = "Trạng thái";
-                    worksheet.Cells[6, 8].Value = "Ngày thanh lý";
-                    worksheet.Cells[6, 9].Value = "Ghi chú";
+                    worksheet.Cells[6, 3].Value = "Tên tài sản";
+                    worksheet.Cells[6, 4].Value = "Năm sử dụng";
+                    worksheet.Cells[6, 5].Value = "Thông số kỹ thuật";
+                    worksheet.Cells[6, 6].Value = "Số lượng";
+                    worksheet.Cells[6, 7].Value = "Thành tiền";
+                    worksheet.Cells[6, 8].Value = "Trạng thái";
+                    worksheet.Cells[6, 9].Value = "Ngày thanh lý";
+                    worksheet.Cells[6, 10].Value = "Ghi chú";
 
                     // Add data từ mảng assets vào file Excel
                     for (int i = 0; i < assets.Count; i++)
                     {
                         worksheet.Cells[i + 7, 1].Value = assets[i].AssetID;
                         worksheet.Cells[i + 7, 2].Value = assets[i].DeviceID;
-                        worksheet.Cells[i + 7, 3].Value = assets[i].YearOfUse;
-                        worksheet.Cells[i + 7, 4].Value = assets[i].TechnicalSpecification;
-                        worksheet.Cells[i + 7, 5].Value = assets[i].Quantity;
-                        worksheet.Cells[i + 7, 6].Value = assets[i].Cost;
-                        worksheet.Cells[i + 7, 7].Value = assets[i].Status;
-                        worksheet.Cells[i + 7, 8].Value = assets[i].DateDisposed.ToString("dd/MM/yyyy");
-                        worksheet.Cells[i + 7, 9].Value = assets[i].Notes;
+                        worksheet.Cells[i + 7, 3].Value = assets[i].AssetName;
+                        worksheet.Cells[i + 7, 4].Value = assets[i].YearOfUse;
+                        worksheet.Cells[i + 7, 5].Value = assets[i].TechnicalSpecification;
+                        worksheet.Cells[i + 7, 6].Value = assets[i].Quantity;
+                        worksheet.Cells[i + 7, 7].Value = assets[i].Cost;
+                        worksheet.Cells[i + 7, 8].Value = assets[i].Status;
+                        worksheet.Cells[i + 7, 9].Value = assets[i].DateDisposed.ToString("dd/MM/yyyy");
+                        worksheet.Cells[i + 7, 10].Value = assets[i].Notes;
                     }
 
                     // Áp dụng định dạng cho header
-                    using (var range = worksheet.Cells[6, 1, 6, 9])
+                    using (var range = worksheet.Cells[6, 1, 6, 10])
                     {
                         range.Style.Font.Bold = true;
                         range.Style.Font.Size = 10;
@@ -216,14 +214,6 @@ namespace PBL3_Server.Controllers
             if (result is null)
                 return NotFound(new { status = "failure", message = "Asset not found!" });
 
-            return Ok(new { status = "success", data = result });
-        }
-
-        [Authorize]
-        [HttpGet("statistic")]
-        public async Task<ActionResult> StatisticDisposeAsset(string organization_id = "", string room_id = "", int year_of_use = 0, string year_dispose = "")
-        {
-            var result = await _DisposedAssetService.StatisticDisposeAsset(organization_id, room_id, year_of_use, year_dispose);
             return Ok(new { status = "success", data = result });
         }
     }
