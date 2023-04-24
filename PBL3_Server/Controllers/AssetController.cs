@@ -182,7 +182,7 @@ namespace PBL3_Server.Controllers
             }
             asset.AssetID = Guid.NewGuid().ToString();
             var result = await _AssetService.AddAsset(asset);
-            return Ok(new { status = "success", data = result });
+            return Ok(new { status = "success" });
         }
 
         [Authorize]
@@ -214,7 +214,7 @@ namespace PBL3_Server.Controllers
             if (result is null)
                 return NotFound(new { status = "failure", message = "Asset not found!" });
 
-            return Ok(new { status = "success", data = result });
+            return Ok(new { status = "success" });
         }
 
         [Authorize]
@@ -230,7 +230,7 @@ namespace PBL3_Server.Controllers
             if (result is null)
                 return NotFound(new { status = "failure", message = "Asset not found!" });
 
-            return Ok(new { status = "success", data = result });
+            return Ok(new { status = "success" });
         }
 
         [Authorize]
@@ -243,31 +243,33 @@ namespace PBL3_Server.Controllers
             var count_disposed = await _DisposedAssetService.StatisticDisposeAsset(organization_id, year_of_use, year_dispose);
             var total = count_good + count_broken + count_disposed + count_maintenance;
 
-            var countStatus = (
-                total: total,
-                count_good: count_good,
-                count_broken: count_broken,
-                count_maintenance: count_maintenance,
-                count_disposed: count_disposed
-            );
+            var countStatus = new
+            {
+                total = total,
+                count_good = count_good,
+                count_broken = count_broken,
+                count_maintenance = count_maintenance,
+                count_disposed = count_disposed
+            };
 
-            if (year_dispose == 0)
+            // nếu year dispose = 0, đếm toàn bộ tài sản của từng tháng trong toàn thời gian
+            if (year_dispose <= 0)
             {
                 var soldAssets = await _DisposedAssetService.GetAllDisposedAssets();
 
                 // Nhóm các tài sản theo tháng và đếm số lượng tài sản trong mỗi nhóm
                 var soldAssetsByMonth = soldAssets
-                    .GroupBy(asset => asset.DateDisposed.ToString("yyyy-MM"))
+                    .GroupBy(asset => asset.DateDisposed.ToString("MM"))
                     .Select(group => new
                     {
                         Month = group.Key,
                         Count = group.Count()
                     });
 
-                // Tạo danh sách chứa tất cả các tháng
+                // Tạo danh sách chứa các tháng từ 1 đến 12
                 var allMonths = Enumerable.Range(1, 12)
-                    .SelectMany(year => Enumerable.Range(1, 12).Select(month => new DateTime(year, month, 1)))
-                    .Select(date => date.ToString("yyyy-MM"));
+                    .Select(month => new DateTime(1, month, 1))
+                    .Select(date => date.ToString("MM"));
 
                 // Kết hợp danh sách các tháng với danh sách tài sản đã thanh lý theo tháng
                 var countDisposeMonth = allMonths
@@ -283,6 +285,7 @@ namespace PBL3_Server.Controllers
                     )
                     .OrderBy(entry => entry.Month)
                     .ToList();
+
                 return Ok(new { status = "success", data = new { countStatus = countStatus, countDisposeMonth = countDisposeMonth } });
             }
             else
@@ -292,7 +295,7 @@ namespace PBL3_Server.Controllers
 
                 // Nhóm các tài sản theo tháng và đếm số lượng tài sản trong mỗi nhóm
                 var soldAssetsByMonth = soldAssetsInYear
-                    .GroupBy(asset => asset.DateDisposed.ToString("yyyy-MM"))
+                    .GroupBy(asset => asset.DateDisposed.ToString("MM"))
                     .Select(group => new
                     {
                         Month = group.Key,
@@ -302,7 +305,7 @@ namespace PBL3_Server.Controllers
                 // Tạo danh sách chứa tất cả các tháng trong năm
                 var allMonths = Enumerable.Range(1, 12)
                     .Select(month => new DateTime(year_dispose, month, 1))
-                    .Select(date => date.ToString("yyyy-MM"));
+                    .Select(date => date.ToString("MM"));
 
                 // Kết hợp danh sách các tháng với danh sách tài sản đã thanh lý theo tháng
                 var countDisposeMonth = allMonths

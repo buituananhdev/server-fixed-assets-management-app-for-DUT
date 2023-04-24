@@ -29,7 +29,7 @@ builder.Services.AddDbContext<DataContext>();
 
 
 
-var key = Encoding.ASCII.GetBytes("my top secret key");
+var key = Encoding.ASCII.GetBytes(builder.Configuration.GetSection("AppSettings:SecretKey").Value!);
 
 builder.Services.AddAuthentication(x =>
 {
