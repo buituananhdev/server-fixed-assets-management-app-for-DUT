@@ -96,7 +96,7 @@ namespace PBL3_Server.Services.DisposedAssetService
             return DisposedAssets;
         }
 
-        public async Task<int> StatisticDisposeAsset(string organization_id, int year_of_use, int year_dispose)
+        public async Task<int> StatisticDisposeAsset(string organization_id, int year_dispose)
         {
             IQueryable<DisposedAsset> assets = _context.DisposedAssets;
 
@@ -106,11 +106,6 @@ namespace PBL3_Server.Services.DisposedAssetService
                     .Where(r => r.organizationID.ToLower() == organization_id.ToLower());
 
                 assets = assets.Where(a => rooms.Any(r => r.RoomID == a.RoomID));
-            }
-
-            if (year_of_use > 0)
-            {
-                assets = assets.Where(a => a.YearOfUse == year_of_use);
             }
 
             if (year_dispose > 0)

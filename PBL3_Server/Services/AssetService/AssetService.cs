@@ -94,7 +94,7 @@ namespace PBL3_Server.Services.AssetService
             return Assets;
         }
 
-        public async Task<int> StatisticAsset(string organization_id, int year_of_use, string status)
+        public async Task<int> StatisticAsset(string organization_id, int year, string status)
         {
             IQueryable<Asset> assets = _context.Assets;
 
@@ -106,9 +106,9 @@ namespace PBL3_Server.Services.AssetService
                 assets = assets.Where(a => rooms.Any(r => r.RoomID == a.RoomID));
             }
 
-            if (year_of_use > 0)
+            if (year > 0)
             {
-                assets = assets.Where(a => a.YearOfUse == year_of_use);
+                assets = assets.Where(a => a.YearOfUse == year);
             }
 
             if (!string.IsNullOrEmpty(status))
