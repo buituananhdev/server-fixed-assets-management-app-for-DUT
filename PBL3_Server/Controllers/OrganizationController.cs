@@ -34,6 +34,7 @@ namespace PBL3_Server.Controllers
                 organizations = organizations.Where(a => a.OrganizationType.ToLower() == organizationType.ToLower()).ToList();
             }
 
+
             // tìm kiếm tài sản
             if (!string.IsNullOrEmpty(searchQuery))
             {
