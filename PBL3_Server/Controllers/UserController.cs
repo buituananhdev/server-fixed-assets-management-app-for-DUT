@@ -9,7 +9,7 @@ using X.PagedList;
 
 namespace PBL3_Server.Controllers
 {
-    [Route("api/user")]
+    [Route("api/users")]
     [ApiController]
     public class UserController : ControllerBase
     {

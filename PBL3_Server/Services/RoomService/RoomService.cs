@@ -18,5 +18,15 @@ namespace PBL3_Server.Services.RoomService
             var rooms = await _context.Rooms.ToListAsync();
             return rooms;
         }
+
+        public async Task<Room?> GetSingleRoom(string roomID)
+        {
+            var room = await _context.Rooms.FindAsync(roomID);
+            if(room is null)
+            {
+                return null;
+            }
+            return room;
+        }
     }
 }

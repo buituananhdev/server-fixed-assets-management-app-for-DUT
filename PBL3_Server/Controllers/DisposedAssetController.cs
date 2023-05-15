@@ -8,7 +8,7 @@ using X.PagedList;
 
 namespace PBL3_Server.Controllers
 {
-    [Route("api/disposed_asset")]
+    [Route("api/disposed_assets")]
     [ApiController]
     public class DisposedAssetController : ControllerBase
     {

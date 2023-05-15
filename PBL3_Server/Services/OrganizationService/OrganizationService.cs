@@ -12,6 +12,7 @@ namespace PBL3_Server.Services.OrganizationService
         {
             _context = context;
         }
+
         public async Task<List<Organization>> AddOrganization(Organization organization)
         {
             _context.Organizations.Add(organization);
@@ -19,7 +20,7 @@ namespace PBL3_Server.Services.OrganizationService
             return Organizations;
         }
 
-        public async Task<List<Organization>?> DeleteOrganization(int id)
+        public async Task<List<Organization>?> DeleteOrganization(string id)
         {
             var organization = await _context.Organizations.FindAsync(id);
             if (organization is null)
@@ -35,7 +36,15 @@ namespace PBL3_Server.Services.OrganizationService
             return organizations;
         }
 
-        public async Task<List<Organization>?> UpdateOrganization(int id, Organization request)
+        public async Task<Organization?> GetSingleOrganization(string organizationID)
+        {
+            var organization = await _context.Organizations.FindAsync(organizationID);
+            if (organization is null)
+                return null;
+            return organization;
+        }
+
+        public async Task<List<Organization>?> UpdateOrganization(string id, Organization request)
         {
             var organization = await _context.Organizations.FindAsync(id);
             if (organization is null)

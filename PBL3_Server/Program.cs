@@ -59,16 +59,6 @@ app.UseCors(builder =>
 app.MapGet("/", async context =>
 {
     await context.Response.WriteAsync("Hello World!");
-}); app.UseCors(builder =>
-{
-    builder.AllowAnyOrigin()
-           .AllowAnyMethod()
-           .AllowAnyHeader();
-});
-
-app.MapGet("/", async context =>
-{
-    await context.Response.WriteAsync("Hello World!");
 });
 
 

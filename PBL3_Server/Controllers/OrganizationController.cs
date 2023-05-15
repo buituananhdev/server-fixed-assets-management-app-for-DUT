@@ -7,7 +7,7 @@ using X.PagedList;
 
 namespace PBL3_Server.Controllers
 {
-    [Route("api/organization")]
+    [Route("api/organizations")]
     [ApiController]
     public class OrganizationController : ControllerBase
     {
@@ -21,7 +21,7 @@ namespace PBL3_Server.Controllers
         [Authorize]
         [HttpGet]
         // Hàm trả về danh sách tài sản 
-        public async Task<ActionResult<List<Organization>>> GetAllOrganizations(int pageNumber = 1, int pageSize = 10, string type = "")
+        public async Task<ActionResult<List<Organization>>> GetAllOrganizations(int pageNumber = 1, int pageSize = 50, string organizationType = "", string searchQuery = "")
         {
             if (!User.Identity.IsAuthenticated)
             {
@@ -29,10 +29,19 @@ namespace PBL3_Server.Controllers
             }
 
             var organizations = await _OrganizationService.GetAllOrganizations();
-            if (!string.IsNullOrEmpty(type))
+            if (!string.IsNullOrEmpty(organizationType))
             {
-                organizations = organizations.Where(a => a.OrganizationType.ToLower() == type.ToLower()).ToList();
+                organizations = organizations.Where(a => a.OrganizationType.ToLower() == organizationType.ToLower()).ToList();
             }
+
+            // tìm kiếm tài sản
+            if (!string.IsNullOrEmpty(searchQuery))
+            {
+                organizations = organizations.Where(o =>
+                   o.OrganizationName.ToLower().Contains(searchQuery.ToLower())
+                ).ToList();
+            }
+
             var pagedOrganizations = organizations.ToPagedList(pageNumber, pageSize);
 
             //Tạo đối tượng paginationInfo để lưu thông tin phân trang
@@ -48,22 +57,38 @@ namespace PBL3_Server.Controllers
         }
 
         [Authorize]
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Organization>> GetSingleOrganization(string id = "")
+        {
+            if (!User.Identity.IsAuthenticated)
+            {
+                return Unauthorized(new { message = "You don't have permission to access this page" });
+            }
+
+            var result = await _OrganizationService.GetSingleOrganization(id);
+            if (result is null)
+                return NotFound(new { status = "failure", message = "Organization not found!" });
+            return Ok(new { status = "success", data = result });
+        }
+
+        [Authorize]
         [HttpPost]
-        // Hàm thêm tài sản
         public async Task<ActionResult<List<Organization>>> AddOrganization(Organization organization)
         {
             if (!User.Identity.IsAuthenticated)
             {
                 return Unauthorized(new { message = "You don't have permission to access this page" });
             }
-            var result = await _OrganizationService.AddOrganization(organization);
-            return Ok(new { status = "success", data = result });
+
+            organization.OrganizationID = Guid.NewGuid().ToString().Substring(0, 29);
+            await _OrganizationService.AddOrganization(organization);
+            return Ok(new { status = "success" });
         }
 
         [Authorize]
         [HttpPut("{id}")]
         //Hàm cập nhật tài sản
-        public async Task<ActionResult<List<Organization>>> UpdateOrganization(int id, Organization request)
+        public async Task<ActionResult<List<Organization>>> UpdateOrganization(string id, Organization request)
         {
             if (!User.Identity.IsAuthenticated)
             {
@@ -79,7 +104,7 @@ namespace PBL3_Server.Controllers
         [Authorize]
         [HttpDelete("{id}")]
         // Hàm xóa tài sản theo ID
-        public async Task<ActionResult<List<Organization>>> DeleteOrganization(int id)
+        public async Task<ActionResult<List<Organization>>> DeleteOrganization(string id)
         {
             if (!User.Identity.IsAuthenticated)
             {
@@ -89,7 +114,7 @@ namespace PBL3_Server.Controllers
             if (result is null)
                 return NotFound(new { status = "failure", message = "Organization not found!" });
 
-            return Ok(new { status = "success", data = result });
+            return Ok(new { status = "success"});
         }
     }
 }

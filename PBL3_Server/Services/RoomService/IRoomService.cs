@@ -3,5 +3,6 @@
     public interface IRoomService
     {
         Task<List<Room>> GetAllRooms();
+        Task<Room?> GetSingleRoom(string roomID);
     }
 }
