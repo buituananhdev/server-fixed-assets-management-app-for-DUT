@@ -23,7 +23,7 @@ namespace PBL3_Server.Controllers
         [Authorize(Roles = "admin")]
         [HttpGet]
         // Hàm trả về danh sách user 
-        public async Task<ActionResult<List<User>>> GetAllUsers(int pageNumber = 1, int pageSize = 10)
+        public async Task<ActionResult<List<User>>> GetAllUsers(int pageNumber = 1, int pageSize = 10, string searchQuery = "", string permission = "")
         {
             if (!User.Identity.IsAuthenticated)
             {
@@ -31,6 +31,21 @@ namespace PBL3_Server.Controllers
             }
 
             var users = await _UserService.GetAllUsers();
+
+            if (!string.IsNullOrEmpty(permission))
+            {
+                users = users.Where(a => a.UserRole.ToLower() == permission.ToLower()).ToList();
+            }
+
+            // tìm kiếm tài sản
+            if (!string.IsNullOrEmpty(searchQuery))
+            {
+                users = users.Where(a =>
+                    a.Username.ToLower().Contains(searchQuery.ToLower()) ||
+                    a.FullName.ToLower().Contains(searchQuery.ToLower())
+                ).ToList();
+            }
+
             var pagedUsers = users.ToPagedList(pageNumber, pageSize);
 
             //Tạo đối tượng paginationInfo để lưu thông tin phân trang
