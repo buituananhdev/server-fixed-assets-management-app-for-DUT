@@ -96,11 +96,13 @@ namespace PBL3_Server.Controllers
                     worksheet.Cells[6, 1].Value = "Mã TS";
                     worksheet.Cells[6, 2].Value = "Mã số TB";
                     worksheet.Cells[6, 3].Value = "Năm sử dụng";
-                    worksheet.Cells[6, 4].Value = "Thông số kỹ thuật";
-                    worksheet.Cells[6, 5].Value = "Số lượng";
-                    worksheet.Cells[6, 6].Value = "Thành tiền";
-                    worksheet.Cells[6, 7].Value = "Trạng thái";
-                    worksheet.Cells[6, 8].Value = "Ghi chú";
+                    worksheet.Cells[6, 4].Value = "Tên tài sản";
+                    worksheet.Cells[6, 5].Value = "Thông số kỹ thuật";
+                    worksheet.Cells[6, 6].Value = "Số lượng";
+                    worksheet.Cells[6, 7].Value = "Tỷ lệ % CL";
+                    worksheet.Cells[6, 8].Value = "Thành tiền";
+                    worksheet.Cells[6, 9].Value = "Trạng thái";
+                    worksheet.Cells[6, 10].Value = "Ghi chú";
 
                     // Add data từ mảng assets vào file Excel
                     for (int i = 0; i < assets.Count; i++)
@@ -108,11 +110,13 @@ namespace PBL3_Server.Controllers
                         worksheet.Cells[i + 7, 1].Value = assets[i].AssetID;
                         worksheet.Cells[i + 7, 2].Value = assets[i].DeviceID;
                         worksheet.Cells[i + 7, 3].Value = assets[i].YearOfUse;
-                        worksheet.Cells[i + 7, 4].Value = assets[i].TechnicalSpecification;
-                        worksheet.Cells[i + 7, 5].Value = assets[i].Quantity;
-                        worksheet.Cells[i + 7, 6].Value = assets[i].Cost;
-                        worksheet.Cells[i + 7, 7].Value = assets[i].Status;
-                        worksheet.Cells[i + 7, 8].Value = assets[i].Notes;
+                        worksheet.Cells[i + 7, 4].Value = assets[i].AssetName;
+                        worksheet.Cells[i + 7, 5].Value = assets[i].TechnicalSpecification;
+                        worksheet.Cells[i + 7, 6].Value = assets[i].Quantity;
+                        worksheet.Cells[i + 7, 7].Value = assets[i].Cost;
+                        worksheet.Cells[i + 7, 8].Value = assets[i].PercentageCL;
+                        worksheet.Cells[i + 7, 9].Value = assets[i].Status;
+                        worksheet.Cells[i + 7, 10].Value = assets[i].Notes;
                     }
 
                     // Áp dụng định dạng cho header
@@ -253,7 +257,7 @@ namespace PBL3_Server.Controllers
             };
 
             // nếu year dispose = 0, đếm toàn bộ tài sản của từng tháng trong toàn thời gian
-            if (year_of_use <= 0)
+            if (year_of_use == 0)
             {
                 var soldAssets = await _DisposedAssetService.GetAllDisposedAssets();
 

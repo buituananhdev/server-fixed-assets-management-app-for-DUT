@@ -53,6 +53,7 @@ namespace PBL3_Server.Controllers
             // Lưu token và refresh token vào cơ sở dữ liệu
             var tokenEntity = new TokenEntity
             {
+                UserID = user.UserID,
                 Username = user.Username,
                 JwtToken = tokenHandler.WriteToken(jwtToken),
                 RefreshToken = refreshToken,
