@@ -6,6 +6,7 @@ namespace PBL3_Server.Models
     {
         [Key]
         public int Id { get; set; }
+        public string UserID { get; set; }
         public string Username { get; set; }
         public string JwtToken { get; set; }
         public string RefreshToken { get; set; }

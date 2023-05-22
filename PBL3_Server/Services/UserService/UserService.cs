@@ -24,7 +24,9 @@
             var user = await _context.Users.FindAsync(userID);
             if (user is null)
                 return null;
-            _context.Remove(user);
+            var tokensToDelete = _context.Tokens.Where(t => t.UserID == userID);
+            _context.Tokens.RemoveRange(tokensToDelete);
+            _context.Users.Remove(user);
             await _context.SaveChangesAsync();
             return Users;
         }

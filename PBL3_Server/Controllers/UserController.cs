@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PBL3_Server.Models;
+using PBL3_Server.Services.AssetService;
 using PBL3_Server.Services.RoomService;
 using PBL3_Server.Services.UserService;
 using System.Data;
@@ -20,7 +21,7 @@ namespace PBL3_Server.Controllers
             _UserService = UserService;
         }
 
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = "Quản trị viên")]
         [HttpGet]
         // Hàm trả về danh sách user 
         public async Task<ActionResult<List<User>>> GetAllUsers(int pageNumber = 1, int pageSize = 10, string searchQuery = "", string permission = "")
@@ -60,7 +61,7 @@ namespace PBL3_Server.Controllers
             return Ok(new { status = "success", data = pagedUsers, meta = paginationInfo });
         }
 
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = "Quản trị viên")]
         [HttpGet("{username}")]
         // Hàm trả về thông tin của user qua ID
         public async Task<ActionResult<User>> GetSingleUser(string userID)
@@ -75,7 +76,7 @@ namespace PBL3_Server.Controllers
             return Ok(new { status = "success", data = result });
         }
 
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = "Quản trị viên")]
         [HttpPost]
         // Hàm thêm user
         public async Task<ActionResult<List<User>>> AddUser(User user)
@@ -91,7 +92,7 @@ namespace PBL3_Server.Controllers
             return Ok(new { status = "success", data = result });
         }
 
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = "Quản trị viên")]
         [HttpPut("{username}")]
         //Hàm cập nhật user
         public async Task<ActionResult<List<User>>> UpdateUser(string userID, User request)
@@ -107,20 +108,20 @@ namespace PBL3_Server.Controllers
             return Ok(new { status = "success", data = result });
         }
 
-        [Authorize(Roles = "admin")]
-        [HttpDelete("{username}")]
-        // Hàm xóa user theo ID
-        public async Task<ActionResult<List<User>>> DeleteUser(string userID)
+        [Authorize(Roles = "Quản trị viên")]
+        [HttpDelete("{id}")]
+        // Hàm xóa tài sản theo ID
+        public async Task<ActionResult<List<User>>> DeleteUser(string id)
         {
             if (!User.Identity.IsAuthenticated)
             {
                 return Unauthorized(new { message = "You don't have permission to access this page" });
             }
-            var result = await _UserService.DeleteUser(userID);
+            var result = await _UserService.DeleteUser(id);
             if (result is null)
-                return NotFound(new { status = "failure" , message = "User not found!" });
+                return NotFound(new { status = "failure", message = "User found!" });
 
-            return Ok(new { status = "success", data = result });
+            return Ok(new { status = "success" });
         }
     }
 }
