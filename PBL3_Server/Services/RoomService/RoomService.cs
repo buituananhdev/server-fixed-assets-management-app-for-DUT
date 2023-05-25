@@ -13,6 +13,15 @@ namespace PBL3_Server.Services.RoomService
         {
             _context = context;
         }
+
+        public async Task<List<Room>> AddRoom(Room room)
+        {
+            _context.Rooms.Add(room);
+            await _context.SaveChangesAsync();
+            return Rooms;
+
+        }
+
         public async Task<List<Room>> GetAllRooms()
         {
             var rooms = await _context.Rooms.ToListAsync();

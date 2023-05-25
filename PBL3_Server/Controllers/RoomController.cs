@@ -119,8 +119,21 @@ namespace PBL3_Server.Controllers
         }
 
         [Authorize]
+        [HttpPost]
+        public async Task<ActionResult<List<Room>>> AddRoom(Room room)
+        {
+            if (!User.Identity.IsAuthenticated)
+            {
+                return Unauthorized(new { message = "You don't have permission to access this page" });
+            }
+            await _RoomService.AddRoom(room);
+            return Ok(new { status = "success" });
+        }
+
+
+        [Authorize]
         [HttpGet("{id}")]
-        public async Task<ActionResult<Organization>> GetSingleRoom(string id = "")
+        public async Task<ActionResult<Room>> GetSingleRoom(string id = "")
         {
             if (!User.Identity.IsAuthenticated)
             {

@@ -62,15 +62,15 @@ namespace PBL3_Server.Controllers
         }
 
         [Authorize(Roles = "Quản trị viên")]
-        [HttpGet("{username}")]
+        [HttpGet("{id}")]
         // Hàm trả về thông tin của user qua ID
-        public async Task<ActionResult<User>> GetSingleUser(string userID)
+        public async Task<ActionResult<User>> GetSingleUser(string id)
         {
             if (!User.Identity.IsAuthenticated)
             {
                 return Unauthorized(new { message = "You don't have permission to access this page" });
             }
-            var result = await _UserService.GetSingleUser(userID);
+            var result = await _UserService.GetSingleUser(id);
             if (result is null)
                 return NotFound(new { status = "failure", message = "User not found!" });
             return Ok(new { status = "success", data = result });
@@ -93,15 +93,17 @@ namespace PBL3_Server.Controllers
         }
 
         [Authorize(Roles = "Quản trị viên")]
-        [HttpPut("{username}")]
+        [HttpPut("{id}")]
         //Hàm cập nhật user
-        public async Task<ActionResult<List<User>>> UpdateUser(string userID, User request)
+        public async Task<ActionResult<List<User>>> UpdateUser(string id, User request)
         {
             if (!User.Identity.IsAuthenticated)
             {
                 return Unauthorized(new { message = "You don't have permission to access this page" });
             }
-            var result = await _UserService.UpdateUser(userID, request);
+            string hashedPassword = BCrypt.Net.BCrypt.HashPassword(request.Password);
+            request.Password = hashedPassword;
+            var result = await _UserService.UpdateUser(id, request);
             if (result is null)
                 return NotFound(new { status = "failure", message = "User not found!" });
 

@@ -4,5 +4,6 @@
     {
         Task<List<Room>> GetAllRooms();
         Task<Room?> GetSingleRoom(string roomID);
+        Task<List<Room>> AddRoom(Room room);
     }
 }
