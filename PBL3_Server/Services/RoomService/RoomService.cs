@@ -37,5 +37,20 @@ namespace PBL3_Server.Services.RoomService
             }
             return room;
         }
+
+        public async Task<List<Room>?> UpdateRoom(string id, Room request)
+        {
+            var room = await _context.Rooms.FindAsync(id);
+            if (room is null)
+                return null;
+
+            room.RoomID = request.RoomID;
+            room.RoomName = request.RoomName;
+            room.organizationID = request.organizationID;
+
+            await _context.SaveChangesAsync();
+
+            return Rooms;
+        }
     }
 }

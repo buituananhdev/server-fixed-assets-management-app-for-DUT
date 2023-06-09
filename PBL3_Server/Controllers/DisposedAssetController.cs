@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OfficeOpenXml;
+using OfficeOpenXml.Style;
 using PBL3_Server.Services.DisposedAssetService;
 using PBL3_Server.Services.RoomService;
 using System.Data;
+using System.Drawing;
 using X.PagedList;
 
 namespace PBL3_Server.Controllers
@@ -69,50 +71,75 @@ namespace PBL3_Server.Controllers
                 using (var package = new ExcelPackage(stream))
                 {
                     var worksheet = package.Workbook.Worksheets.Add("Danh sách");
+
+                    // Thiết lập font và kích thước cho tiêu đề
                     worksheet.Cells[1, 1].Value = "Trường Đại học Bách khoa";
                     worksheet.Cells[1, 1].Style.Font.Bold = true;
-                    worksheet.Cells[2, 1].Value = "Khoa Công nghệ thông tin";
-                    worksheet.Cells[2, 1].Style.Font.Bold = true;
+                    worksheet.Cells[1, 1].Style.Font.Size = 14;
+
                     worksheet.Cells[4, 1].Value = "BẢNG KIỂM KÊ, ĐÁNH GIÁ TÀI SẢN ĐÃ THANH LÝ";
                     worksheet.Cells[4, 1].Style.Font.Bold = true;
-                    worksheet.Cells[4, 1].Style.Font.Size = 22;
+                    worksheet.Cells[4, 1].Style.Font.Size = 18;
+
+                    // Thiết lập border cho tiêu đề
+                    worksheet.Cells[1, 1, 1, 1].Style.Border.BorderAround(ExcelBorderStyle.Thin);
+                    worksheet.Cells[4, 1, 4, 1].Style.Border.BorderAround(ExcelBorderStyle.Thin);
 
                     // Thêm tiêu đề cho sheet
-                    worksheet.Cells[6, 1].Value = "Mã TS";
-                    worksheet.Cells[6, 2].Value = "Mã số TB";
-                    worksheet.Cells[6, 3].Value = "Tên tài sản";
-                    worksheet.Cells[6, 4].Value = "Năm sử dụng";
-                    worksheet.Cells[6, 5].Value = "Thông số kỹ thuật";
-                    worksheet.Cells[6, 6].Value = "Số lượng";
-                    worksheet.Cells[6, 7].Value = "Thành tiền";
-                    worksheet.Cells[6, 8].Value = "Trạng thái";
-                    worksheet.Cells[6, 9].Value = "Ngày thanh lý";
-                    worksheet.Cells[6, 10].Value = "Ghi chú";
+                    string[] headers = { "Mã TS", "Mã số TB", "Tên tài sản", "Năm sử dụng", "Thông số kỹ thuật", "Số lượng", "Thành tiền", "Trạng thái", "Ngày thanh lý", "Ghi chú" };
+                    for (int i = 1; i <= headers.Length; i++)
+                    {
+                        worksheet.Cells[6, i].Value = headers[i - 1];
+                        worksheet.Cells[6, i].Style.Font.Bold = true;
+
+                        // Thiết lập border và màu nền cho tiêu đề cột
+                        worksheet.Cells[6, i].Style.Border.BorderAround(ExcelBorderStyle.Thin);
+                        worksheet.Cells[6, i].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                        worksheet.Cells[6, i].Style.Fill.BackgroundColor.SetColor(Color.LightGray);
+                    }
 
                     // Add data từ mảng assets vào file Excel
                     for (int i = 0; i < assets.Count; i++)
                     {
-                        worksheet.Cells[i + 7, 1].Value = assets[i].AssetID;
-                        worksheet.Cells[i + 7, 2].Value = assets[i].DeviceID;
-                        worksheet.Cells[i + 7, 3].Value = assets[i].AssetName;
-                        worksheet.Cells[i + 7, 4].Value = assets[i].YearOfUse;
-                        worksheet.Cells[i + 7, 5].Value = assets[i].TechnicalSpecification;
-                        worksheet.Cells[i + 7, 6].Value = assets[i].Quantity;
-                        worksheet.Cells[i + 7, 7].Value = assets[i].Cost;
-                        worksheet.Cells[i + 7, 8].Value = assets[i].Status;
-                        worksheet.Cells[i + 7, 9].Value = assets[i].DateDisposed.ToString("dd/MM/yyyy");
-                        worksheet.Cells[i + 7, 10].Value = assets[i].Notes;
+                        var currentRow = i + 7;
+
+                        worksheet.Cells[currentRow, 1].Value = assets[i].AssetID;
+                        worksheet.Cells[currentRow, 2].Value = assets[i].DeviceID;
+                        worksheet.Cells[currentRow, 3].Value = assets[i].AssetName;
+                        worksheet.Cells[currentRow, 4].Value = assets[i].YearOfUse;
+                        worksheet.Cells[currentRow, 5].Value = assets[i].TechnicalSpecification;
+                        worksheet.Cells[currentRow, 6].Value = assets[i].Quantity;
+                        worksheet.Cells[currentRow, 7].Value = assets[i].Cost;
+                        worksheet.Cells[currentRow, 8].Value = assets[i].Status;
+                        worksheet.Cells[currentRow, 9].Value = assets[i].DateDisposed.ToString("dd/MM/yyyy");
+                        worksheet.Cells[currentRow, 10].Value = assets[i].Notes;
+
+                        // Thiết lập border cho dòng dữ liệu
+                        worksheet.Cells[currentRow, 1, currentRow, headers.Length].Style.Border.BorderAround(ExcelBorderStyle.Thin);
                     }
 
+                    // Thiết lập border cho toàn bộ bảng dữ liệu
+                    worksheet.Cells[6, 1, assets.Count + 6, headers.Length].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                    worksheet.Cells[6, 1, assets.Count + 6, headers.Length].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                    worksheet.Cells[6, 1, assets.Count + 6, headers.Length].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                    worksheet.Cells[6, 1, assets.Count + 6, headers.Length].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+
                     // Áp dụng định dạng cho header
-                    using (var range = worksheet.Cells[6, 1, 6, 10])
+                    using (var range = worksheet.Cells[6, 1, 6, headers.Length])
                     {
                         range.Style.Font.Bold = true;
                         range.Style.Font.Size = 10;
+                        range.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                        range.Style.VerticalAlignment = ExcelVerticalAlignment.Center;
                     }
 
                     // Tự động căn chỉnh cột
                     worksheet.Cells.AutoFitColumns();
+
+                    // Đặt độ rộng cho cột "Tên tài sản" và "Thông số kỹ thuật"
+                    worksheet.Column(3).Width = 25;
+                    worksheet.Column(5).Width = 25;
+
                     // Đặt tên file Excel
                     var fileName = "SoTheoDoiTSCD.xlsx";
 
@@ -129,6 +156,7 @@ namespace PBL3_Server.Controllers
                     return File(stream, Response.ContentType, fileName);
                 }
             }
+
 
             var pagedAssets = assets.ToPagedList(pageNumber, pageSize);
             //Tạo đối tượng paginationInfo để lưu thông tin phân trang

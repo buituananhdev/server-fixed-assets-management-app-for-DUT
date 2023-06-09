@@ -2,9 +2,11 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OfficeOpenXml;
+using OfficeOpenXml.Style;
 using PBL3_Server.Models;
 using PBL3_Server.Services.RoomService;
 using System;
+using System.Drawing;
 using X.PagedList;
 
 namespace PBL3_Server.Controllers
@@ -52,34 +54,67 @@ namespace PBL3_Server.Controllers
                 using (var package = new ExcelPackage(stream))
                 {
                     var worksheet = package.Workbook.Worksheets.Add("Danh sách");
+
+                    // Thiết lập font và kích thước cho tiêu đề
                     worksheet.Cells[1, 1].Value = "Trường Đại học Bách khoa";
                     worksheet.Cells[1, 1].Style.Font.Bold = true;
+                    worksheet.Cells[1, 1].Style.Font.Size = 14;
+
                     worksheet.Cells[4, 1].Value = "DANH SÁCH PHÒNG";
                     worksheet.Cells[4, 1].Style.Font.Bold = true;
-                    worksheet.Cells[4, 1].Style.Font.Size = 22;
+                    worksheet.Cells[4, 1].Style.Font.Size = 18;
+
+                    // Thiết lập border cho tiêu đề
+                    worksheet.Cells[1, 1, 1, 1].Style.Border.BorderAround(ExcelBorderStyle.Thin);
+                    worksheet.Cells[4, 1, 4, 1].Style.Border.BorderAround(ExcelBorderStyle.Thin);
 
                     // Thêm tiêu đề cho sheet
-                    worksheet.Cells[6, 1].Value = "Mã phòng";
-                    worksheet.Cells[6, 2].Value = "Tên phòng";
-                    worksheet.Cells[6, 3].Value = "Mã khoa";
-
-                    // Add data từ mảng assets vào file Excel
-                    for (int i = 0; i < rooms.Count; i++)
+                    string[] headers = { "Mã phòng", "Tên phòng", "Mã khoa" };
+                    for (int i = 1; i <= headers.Length; i++)
                     {
-                        worksheet.Cells[i + 7, 1].Value = rooms[i].RoomID;
-                        worksheet.Cells[i + 7, 2].Value = rooms[i].RoomName;
-                        worksheet.Cells[i + 7, 3].Value = rooms[i].organizationID;
+                        worksheet.Cells[6, i].Value = headers[i - 1];
+                        worksheet.Cells[6, i].Style.Font.Bold = true;
+
+                        // Thiết lập border và màu nền cho tiêu đề cột
+                        worksheet.Cells[6, i].Style.Border.BorderAround(ExcelBorderStyle.Thin);
+                        worksheet.Cells[6, i].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                        worksheet.Cells[6, i].Style.Fill.BackgroundColor.SetColor(Color.LightGray);
                     }
 
+                    // Add data từ mảng rooms vào file Excel
+                    for (int i = 0; i < rooms.Count; i++)
+                    {
+                        var currentRow = i + 7;
+
+                        worksheet.Cells[currentRow, 1].Value = rooms[i].RoomID;
+                        worksheet.Cells[currentRow, 2].Value = rooms[i].RoomName;
+                        worksheet.Cells[currentRow, 3].Value = rooms[i].organizationID;
+
+                        // Thiết lập border cho dòng dữ liệu
+                        worksheet.Cells[currentRow, 1, currentRow, headers.Length].Style.Border.BorderAround(ExcelBorderStyle.Thin);
+                    }
+
+                    // Thiết lập border cho toàn bộ bảng dữ liệu
+                    worksheet.Cells[6, 1, rooms.Count + 6, headers.Length].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                    worksheet.Cells[6, 1, rooms.Count + 6, headers.Length].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                    worksheet.Cells[6, 1, rooms.Count + 6, headers.Length].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                    worksheet.Cells[6, 1, rooms.Count + 6, headers.Length].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+
                     // Áp dụng định dạng cho header
-                    using (var range = worksheet.Cells[6, 1, 6, 3])
+                    using (var range = worksheet.Cells[6, 1, 6, headers.Length])
                     {
                         range.Style.Font.Bold = true;
                         range.Style.Font.Size = 10;
+                        range.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                        range.Style.VerticalAlignment = ExcelVerticalAlignment.Center;
                     }
 
                     // Tự động căn chỉnh cột
                     worksheet.Cells.AutoFitColumns();
+
+                    // Đặt độ rộng cho cột "Tên phòng"
+                    worksheet.Column(2).Width = 25;
+
                     // Đặt tên file Excel
                     var fileName = "SoTheoDoiPhong.xlsx";
 
@@ -143,6 +178,22 @@ namespace PBL3_Server.Controllers
             var result = await _RoomService.GetSingleRoom(id);
             if (result is null)
                 return NotFound(new { status = "failure", message = "Room not found!" });
+            return Ok(new { status = "success", data = result });
+        }
+
+        [Authorize]
+        [HttpPut("{id}")]
+        //Hàm cập nhật tài sản
+        public async Task<ActionResult<List<Room>>> UpdateRoom(string id, Room request)
+        {
+            if (!User.Identity.IsAuthenticated)
+            {
+                return Unauthorized(new { message = "You don't have permission to access this page" });
+            }
+            var result = await _RoomService.UpdateRoom(id, request);
+            if (result is null)
+                return NotFound(new { status = "failure", message = "Room not found!" });
+
             return Ok(new { status = "success", data = result });
         }
     }
